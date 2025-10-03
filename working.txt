@@ -1,0 +1,2 @@
+----------------------------PASSWORD ENCRYPTION--------------------------------
+using bcrypt -- implements multiple rounds of Blowfish Cipher though key stretching
