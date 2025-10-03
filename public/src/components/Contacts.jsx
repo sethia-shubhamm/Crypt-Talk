@@ -69,6 +69,7 @@ const Container = styled.div`
   grid-template-rows: 10% 75% 15%;
   overflow: hidden;
   background-color: #080420;
+  
   .brand {
     display: flex;
     align-items: center;
@@ -82,12 +83,15 @@ const Container = styled.div`
       text-transform: uppercase;
     }
   }
+  
   .contacts {
     display: flex;
     flex-direction: column;
     align-items: center;
     overflow: auto;
     gap: 0.8rem;
+    padding: 0.5rem 0;
+    
     &::-webkit-scrollbar {
       width: 0.2rem;
       &-thumb {
@@ -96,6 +100,7 @@ const Container = styled.div`
         border-radius: 1rem;
       }
     }
+    
     .contact {
       background-color: #ffffff34;
       min-height: 5rem;
@@ -107,17 +112,20 @@ const Container = styled.div`
       gap: 1rem;
       align-items: center;
       transition: 0.5s ease-in-out;
+      
       .avatar {
         img {
           height: 3rem;
         }
       }
+      
       .username {
         h3 {
           color: white;
         }
       }
     }
+    
     .selected {
       background-color: #9a86f3;
     }
@@ -129,19 +137,107 @@ const Container = styled.div`
     justify-content: center;
     align-items: center;
     gap: 2rem;
+    
     .avatar {
       img {
         height: 4rem;
         max-inline-size: 100%;
       }
     }
+    
     .username {
       h2 {
         color: white;
       }
     }
+    
     @media screen and (min-width: 720px) and (max-width: 1080px) {
       gap: 0.5rem;
+      .username {
+        h2 {
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+
+  /* Mobile styles */
+  @media screen and (max-width: 768px) {
+    height: 100vh;
+    grid-template-rows: 12% 73% 15%;
+    
+    .brand {
+      padding: 0.5rem;
+      img {
+        height: 1.8rem;
+      }
+      h3 {
+        font-size: 1.2rem;
+      }
+    }
+    
+    .contacts {
+      gap: 0.5rem;
+      padding: 0.5rem;
+      
+      .contact {
+        min-height: 4rem;
+        padding: 0.5rem;
+        gap: 0.8rem;
+        
+        .avatar {
+          img {
+            height: 2.5rem;
+          }
+        }
+        
+        .username {
+          h3 {
+            font-size: 1rem;
+          }
+        }
+      }
+    }
+    
+    .current-user {
+      gap: 1rem;
+      padding: 0.5rem;
+      
+      .avatar {
+        img {
+          height: 3rem;
+        }
+      }
+      
+      .username {
+        h2 {
+          font-size: 1.1rem;
+        }
+      }
+    }
+  }
+
+  /* Very small mobile screens */
+  @media screen and (max-width: 480px) {
+    .brand {
+      h3 {
+        font-size: 1rem;
+      }
+    }
+    
+    .contacts {
+      .contact {
+        min-height: 3.5rem;
+        
+        .username {
+          h3 {
+            font-size: 0.9rem;
+          }
+        }
+      }
+    }
+    
+    .current-user {
       .username {
         h2 {
           font-size: 1rem;

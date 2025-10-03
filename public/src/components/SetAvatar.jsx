@@ -118,20 +118,27 @@ const Container = styled.div`
   background-color: #131324;
   height: 100vh;
   width: 100vw;
+  padding: 2rem;
 
   .loader {
     max-inline-size: 100%;
+    height: 10rem;
   }
 
   .title-container {
+    text-align: center;
+    
     h1 {
       color: white;
+      font-size: 2rem;
     }
   }
 
   .avatars {
     display: flex;
     gap: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
 
     .avatar {
       border: 0.4rem solid transparent;
@@ -168,9 +175,83 @@ const Container = styled.div`
     border-radius: 0.4rem;
     font-size: 1rem;
     text-transform: uppercase;
+    transition: background-color 0.3s ease;
 
     &:hover {
       background-color: #3c0edc;
+    }
+  }
+
+  /* Mobile styles */
+  @media screen and (max-width: 768px) {
+    gap: 2rem;
+    padding: 1rem;
+    
+    .loader {
+      height: 8rem;
+    }
+    
+    .title-container {
+      h1 {
+        font-size: 1.5rem;
+        line-height: 1.3;
+      }
+    }
+    
+    .avatars {
+      gap: 1.5rem;
+      
+      .avatar {
+        border-width: 0.3rem;
+        padding: 0.3rem;
+        
+        img {
+          height: 5rem;
+        }
+        
+        &:hover {
+          transform: scale(1.05);
+        }
+      }
+    }
+    
+    .submit-btn {
+      padding: 0.8rem 1.5rem;
+      font-size: 0.9rem;
+    }
+  }
+
+  /* Very small mobile screens */
+  @media screen and (max-width: 480px) {
+    gap: 1.5rem;
+    padding: 0.5rem;
+    
+    .loader {
+      height: 6rem;
+    }
+    
+    .title-container {
+      h1 {
+        font-size: 1.3rem;
+      }
+    }
+    
+    .avatars {
+      gap: 1rem;
+      
+      .avatar {
+        border-width: 0.2rem;
+        padding: 0.2rem;
+        
+        img {
+          height: 4rem;
+        }
+      }
+    }
+    
+    .submit-btn {
+      padding: 0.7rem 1.2rem;
+      font-size: 0.8rem;
     }
   }
 `;

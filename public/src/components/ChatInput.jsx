@@ -54,28 +54,35 @@ const Container = styled.div`
   grid-template-columns: 5% 95%;
   background-color: #080420;
   padding: 0 2rem;
+  
   @media screen and (min-width: 720px) and (max-width: 1080px) {
     padding: 0 1rem;
     gap: 1rem;
   }
+  
   .button-container {
     display: flex;
     align-items: center;
     color: white;
     gap: 1rem;
+    
     .emoji {
       position: relative;
+      
       svg {
         font-size: 1.5rem;
         color: #ffff00c8;
         cursor: pointer;
       }
+      
       .emoji-picker-react {
         position: absolute;
         top: -350px;
         background-color: #080420;
         box-shadow: 0 5px 10px #9a86f3;
         border-color: #9a86f3;
+        z-index: 1000;
+        
         .emoji-scroll-wrapper::-webkit-scrollbar {
           background-color: #080420;
           width: 5px;
@@ -83,21 +90,25 @@ const Container = styled.div`
             background-color: #9a86f3;
           }
         }
+        
         .emoji-categories {
           button {
             filter: contrast(0);
           }
         }
+        
         .emoji-search {
           background-color: transparent;
           border-color: #9a86f3;
         }
+        
         .emoji-group:before {
           background-color: #080420;
         }
       }
     }
   }
+  
   .input-container {
     width: 100%;
     border-radius: 2rem;
@@ -105,22 +116,25 @@ const Container = styled.div`
     align-items: center;
     gap: 2rem;
     background-color: #ffffff34;
+    min-height: 3rem;
+    
     input {
       width: 90%;
-      height: 60%;
       background-color: transparent;
       color: white;
       border: none;
-      padding-left: 1rem;
+      padding: 1rem;
       font-size: 1.2rem;
 
       &::selection {
         background-color: #9a86f3;
       }
+      
       &:focus {
         outline: none;
       }
     }
+    
     button {
       padding: 0.3rem 2rem;
       border-radius: 2rem;
@@ -129,15 +143,99 @@ const Container = styled.div`
       align-items: center;
       background-color: #9a86f3;
       border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      
+      &:hover {
+        background-color: #8a76e3;
+      }
+      
       @media screen and (min-width: 720px) and (max-width: 1080px) {
         padding: 0.3rem 1rem;
         svg {
           font-size: 1rem;
         }
       }
+      
       svg {
         font-size: 2rem;
         color: white;
+      }
+    }
+  }
+
+  /* Mobile styles */
+  @media screen and (max-width: 768px) {
+    grid-template-columns: 8% 92%;
+    padding: 0 1rem;
+    gap: 0.5rem;
+    
+    .button-container {
+      .emoji {
+        svg {
+          font-size: 1.3rem;
+        }
+        
+        .emoji-picker-react {
+          top: -320px;
+          left: -50px;
+          width: 280px;
+        }
+      }
+    }
+    
+    .input-container {
+      gap: 1rem;
+      min-height: 2.5rem;
+      
+      input {
+        padding: 0.8rem;
+        font-size: 1rem;
+      }
+      
+      button {
+        padding: 0.4rem 1.2rem;
+        
+        svg {
+          font-size: 1.3rem;
+        }
+      }
+    }
+  }
+
+  /* Very small mobile screens */
+  @media screen and (max-width: 480px) {
+    grid-template-columns: 10% 90%;
+    padding: 0 0.5rem;
+    
+    .button-container {
+      .emoji {
+        svg {
+          font-size: 1.2rem;
+        }
+        
+        .emoji-picker-react {
+          width: 260px;
+          left: -40px;
+        }
+      }
+    }
+    
+    .input-container {
+      gap: 0.8rem;
+      min-height: 2.2rem;
+      
+      input {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+      }
+      
+      button {
+        padding: 0.3rem 1rem;
+        
+        svg {
+          font-size: 1.1rem;
+        }
       }
     }
   }

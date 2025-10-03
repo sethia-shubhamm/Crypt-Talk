@@ -102,14 +102,18 @@ const FormContainer = styled.div`
   gap: 1rem;
   align-items: center;
   background-color: #131324;
+  padding: 1rem;
+  
   .brand {
     display: flex;
     align-items: center;
     gap: 1rem;
     justify-content: center;
+    
     img {
       height: 5rem;
     }
+    
     h1 {
       color: white;
       text-transform: uppercase;
@@ -123,7 +127,10 @@ const FormContainer = styled.div`
     background-color: #00000076;
     border-radius: 2rem;
     padding: 5rem;
+    width: 100%;
+    max-width: 500px;
   }
+  
   input {
     background-color: transparent;
     padding: 1rem;
@@ -132,11 +139,17 @@ const FormContainer = styled.div`
     color: white;
     width: 100%;
     font-size: 1rem;
+    
     &:focus {
       border: 0.1rem solid #997af0;
       outline: none;
     }
+    
+    &::placeholder {
+      color: #ffffff80;
+    }
   }
+  
   button {
     background-color: #4e0eff;
     color: white;
@@ -147,17 +160,93 @@ const FormContainer = styled.div`
     border-radius: 0.4rem;
     font-size: 1rem;
     text-transform: uppercase;
+    transition: background-color 0.3s ease;
+    
     &:hover {
-      background-color: #4e0eff;
+      background-color: #3d0bcc;
     }
   }
+  
   span {
     color: white;
     text-transform: uppercase;
+    text-align: center;
+    
     a {
       color: #4e0eff;
       text-decoration: none;
       font-weight: bold;
+    }
+  }
+
+  /* Mobile styles */
+  @media screen and (max-width: 768px) {
+    padding: 2rem 1rem;
+    gap: 2rem;
+    
+    .brand {
+      img {
+        height: 4rem;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+    }
+    
+    form {
+      padding: 3rem 2rem;
+      gap: 1.5rem;
+      border-radius: 1.5rem;
+    }
+    
+    input {
+      padding: 0.8rem;
+      font-size: 0.9rem;
+    }
+    
+    button {
+      padding: 0.8rem 1.5rem;
+      font-size: 0.9rem;
+    }
+    
+    span {
+      font-size: 0.8rem;
+    }
+  }
+
+  /* Very small mobile screens */
+  @media screen and (max-width: 480px) {
+    padding: 1rem 0.5rem;
+    
+    .brand {
+      img {
+        height: 3rem;
+      }
+      
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+    
+    form {
+      padding: 2rem 1.5rem;
+      gap: 1.2rem;
+      margin: 0 0.5rem;
+    }
+    
+    input {
+      padding: 0.7rem;
+      font-size: 0.85rem;
+    }
+    
+    button {
+      padding: 0.7rem 1.2rem;
+      font-size: 0.85rem;
+    }
+    
+    span {
+      font-size: 0.75rem;
     }
   }
 `;

@@ -29,10 +29,58 @@ const Container = styled.div`
   align-items: center;
   color: white;
   flex-direction: column;
+  padding: 2rem;
+  text-align: center;
+  gap: 1rem;
+  
   img {
     height: 20rem;
   }
+  
+  h1 {
+    font-size: 2rem;
+  }
+  
+  h3 {
+    font-size: 1.2rem;
+  }
+  
   span {
     color: #4e0eff;
+  }
+
+  /* Mobile styles */
+  @media screen and (max-width: 768px) {
+    padding: 1rem;
+    gap: 1rem;
+    
+    img {
+      height: 15rem;
+    }
+    
+    h1 {
+      font-size: 1.5rem;
+    }
+    
+    h3 {
+      font-size: 1rem;
+    }
+  }
+
+  /* Very small mobile screens */
+  @media screen and (max-width: 480px) {
+    padding: 0.5rem;
+    
+    img {
+      height: 12rem;
+    }
+    
+    h1 {
+      font-size: 1.3rem;
+    }
+    
+    h3 {
+      font-size: 0.9rem;
+    }
   }
 `;

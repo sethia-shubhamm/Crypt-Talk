@@ -21,3 +21,22 @@ body {
 .Toastify__toast-theme--dark {
   background-color: #00000076 !important;
 }
+
+/* Mobile responsive base styles */
+@media screen and (max-width: 768px) {
+  body {
+    overflow-x: hidden;
+  }
+}
+
+/* Touch-friendly scrollbars for mobile */
+@media screen and (max-width: 768px) {
+  *::-webkit-scrollbar {
+    width: 4px !important;
+  }
+  
+  *::-webkit-scrollbar-thumb {
+    background-color: #ffffff39 !important;
+    border-radius: 2px !important;
+  }
+}

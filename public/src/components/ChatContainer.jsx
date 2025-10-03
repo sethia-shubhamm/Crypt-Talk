@@ -4,9 +4,10 @@ import ChatInput from "./ChatInput";
 import Logout from "./Logout";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
+import { IoArrowBack } from "react-icons/io5";
 import { sendMessageRoute, recieveMessageRoute } from "../utils/APIRoutes";
 
-export default function ChatContainer({ currentChat, socket }) {
+export default function ChatContainer({ currentChat, socket, onBackToContacts, isMobile }) {
   const [messages, setMessages] = useState([]);
   const scrollRef = useRef();
   const [arrivalMessage, setArrivalMessage] = useState(null);
@@ -70,8 +71,13 @@ export default function ChatContainer({ currentChat, socket }) {
   }, [messages]);
 
   return (
-    <Container>
+    <Container isMobile={isMobile}>
       <div className="chat-header">
+        {isMobile && (
+          <div className="back-button" onClick={onBackToContacts}>
+            <IoArrowBack />
+          </div>
+        )}
         <div className="user-details">
           <div className="avatar">
             <img
@@ -112,23 +118,49 @@ const Container = styled.div`
   grid-template-rows: 10% 80% 10%;
   gap: 0.1rem;
   overflow: hidden;
+  height: ${props => props.isMobile ? '100vh' : 'auto'};
+  
   @media screen and (min-width: 720px) and (max-width: 1080px) {
     grid-template-rows: 15% 70% 15%;
   }
+  
   .chat-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 2rem;
+    background-color: #080420;
+    
+    .back-button {
+      color: white;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s ease;
+      
+      &:hover {
+        background-color: #ffffff20;
+      }
+      
+      svg {
+        font-size: 1.5rem;
+      }
+    }
+    
     .user-details {
       display: flex;
       align-items: center;
       gap: 1rem;
+      
       .avatar {
         img {
           height: 3rem;
         }
       }
+      
       .username {
         h3 {
           color: white;
@@ -136,12 +168,14 @@ const Container = styled.div`
       }
     }
   }
+  
   .chat-messages {
     padding: 1rem 2rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
     overflow: auto;
+    
     &::-webkit-scrollbar {
       width: 0.2rem;
       &-thumb {
@@ -150,9 +184,11 @@ const Container = styled.div`
         border-radius: 1rem;
       }
     }
+    
     .message {
       display: flex;
       align-items: center;
+      
       .content {
         max-width: 40%;
         overflow-wrap: break-word;
@@ -160,21 +196,104 @@ const Container = styled.div`
         font-size: 1.1rem;
         border-radius: 1rem;
         color: #d1d1d1;
+        
         @media screen and (min-width: 720px) and (max-width: 1080px) {
           max-width: 70%;
         }
       }
     }
+    
     .sended {
       justify-content: flex-end;
       .content {
         background-color: #4f04ff21;
       }
     }
+    
     .recieved {
       justify-content: flex-start;
       .content {
         background-color: #9900ff20;
+      }
+    }
+  }
+
+  /* Mobile styles */
+  @media screen and (max-width: 768px) {
+    grid-template-rows: 8% 82% 10%;
+    
+    .chat-header {
+      padding: 0 1rem;
+      gap: 1rem;
+      
+      .user-details {
+        gap: 0.8rem;
+        
+        .avatar {
+          img {
+            height: 2.5rem;
+          }
+        }
+        
+        .username {
+          h3 {
+            font-size: 1.1rem;
+          }
+        }
+      }
+    }
+    
+    .chat-messages {
+      padding: 0.5rem 1rem;
+      gap: 0.8rem;
+      
+      .message {
+        .content {
+          max-width: 75%;
+          padding: 0.8rem;
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+
+  /* Very small mobile screens */
+  @media screen and (max-width: 480px) {
+    .chat-header {
+      padding: 0 0.5rem;
+      
+      .back-button {
+        svg {
+          font-size: 1.3rem;
+        }
+      }
+      
+      .user-details {
+        gap: 0.5rem;
+        
+        .avatar {
+          img {
+            height: 2rem;
+          }
+        }
+        
+        .username {
+          h3 {
+            font-size: 1rem;
+          }
+        }
+      }
+    }
+    
+    .chat-messages {
+      padding: 0.5rem;
+      
+      .message {
+        .content {
+          max-width: 85%;
+          padding: 0.6rem;
+          font-size: 0.9rem;
+        }
       }
     }
   }

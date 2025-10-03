@@ -14,6 +14,8 @@ export default function Chat() {
   const [contacts, setContacts] = useState([]);
   const [currentChat, setCurrentChat] = useState(undefined);
   const [currentUser, setCurrentUser] = useState(undefined);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [showContacts, setShowContacts] = useState(true);
   useEffect(async () => {
     if (!localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)) {
       navigate("/login");
@@ -24,6 +26,14 @@ export default function Chat() {
         )
       );
     }
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
   useEffect(() => {
     if (currentUser) {
@@ -44,16 +54,53 @@ export default function Chat() {
   }, [currentUser]);
   const handleChatChange = (chat) => {
     setCurrentChat(chat);
+    if (isMobile) {
+      setShowContacts(false);
+    }
+  };
+
+  const handleBackToContacts = () => {
+    if (isMobile) {
+      setShowContacts(true);
+      setCurrentChat(undefined);
+    }
   };
   return (
     <>
       <Container>
         <div className="container">
-          <Contacts contacts={contacts} changeChat={handleChatChange} />
-          {currentChat === undefined ? (
+          {/* Desktop view - always show both */}
+          {!isMobile && (
+            <>
+              <Contacts contacts={contacts} changeChat={handleChatChange} />
+              {currentChat === undefined ? (
+                <Welcome />
+              ) : (
+                <ChatContainer 
+                  currentChat={currentChat} 
+                  socket={socket} 
+                  onBackToContacts={handleBackToContacts}
+                />
+              )}
+            </>
+          )}
+          
+          {/* Mobile view - show contacts or chat */}
+          {isMobile && showContacts && (
+            <Contacts contacts={contacts} changeChat={handleChatChange} />
+          )}
+          
+          {isMobile && !showContacts && currentChat && (
+            <ChatContainer 
+              currentChat={currentChat} 
+              socket={socket} 
+              onBackToContacts={handleBackToContacts}
+              isMobile={true}
+            />
+          )}
+          
+          {isMobile && !showContacts && !currentChat && (
             <Welcome />
-          ) : (
-            <ChatContainer currentChat={currentChat} socket={socket} />
           )}
         </div>
       </Container>
@@ -76,8 +123,24 @@ const Container = styled.div`
     background-color: #00000076;
     display: grid;
     grid-template-columns: 25% 75%;
+    
     @media screen and (min-width: 720px) and (max-width: 1080px) {
       grid-template-columns: 35% 65%;
+    }
+    
+    /* Mobile styles */
+    @media screen and (max-width: 768px) {
+      height: 100vh;
+      width: 100vw;
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+      gap: 0;
+    }
+    
+    /* Very small mobile screens */
+    @media screen and (max-width: 480px) {
+      height: 100vh;
+      width: 100vw;
     }
   }
 `;
