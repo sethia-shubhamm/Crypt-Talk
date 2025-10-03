@@ -1,7 +1,4 @@
-// Automatically detect environment and set appropriate host
-export const host = process.env.NODE_ENV === 'production' 
-  ? window.location.origin  // Use same domain in production
-  : "http://localhost:5000"; // Use localhost in development
+export const host = "http://localhost:5000";
 
 export const loginRoute = `${host}/api/auth/login`;
 export const registerRoute = `${host}/api/auth/register`;

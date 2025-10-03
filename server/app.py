@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory, send_file
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_pymongo import PyMongo
 from flask_socketio import SocketIO
@@ -14,8 +14,7 @@ from communication.socketio.socket_handler import create_socketio_handlers, remo
 # Load environment variables
 load_dotenv()
 
-# Configure Flask to serve React build files
-app = Flask(__name__, static_folder='build', static_url_path='')
+app = Flask(__name__)
 CORS(app, origins="*")
 
 # Socket.IO configuration
@@ -69,18 +68,9 @@ def init_test_user():
         print("✅ Test user already exists: username='testuser', password='password123'")
 
 # Routes
-@app.route('/api/health', methods=['GET'])
-def health_check():
-    """API health check"""
-    return jsonify({"status": "ok", "message": "Python Flask backend is running!"})
-
 @app.route('/', methods=['GET'])
-def serve_react_app():
-    """Serve React app"""
-    try:
-        return send_from_directory(app.static_folder, 'index.html')
-    except:
-        return jsonify({"status": "ok", "message": "Frontend not built yet. Building..."})
+def health_check():
+    return jsonify({"status": "ok", "message": "Python Flask backend is running!"})
 
 @app.route('/api/auth/register', methods=['POST'])
 def register():
@@ -198,20 +188,6 @@ def logout(user_id):
     
     except Exception as e:
         return jsonify({"msg": f"Server error: {str(e)}", "status": False}), 500
-
-# Catch-all handler for React Router (must be last)
-@app.route('/<path:path>')
-def serve_react_app_routing(path):
-    """Handle React Router routes"""
-    try:
-        # If it's an API call, return 404
-        if path.startswith('api/'):
-            return jsonify({"msg": "API endpoint not found"}), 404
-        
-        # Otherwise serve React app
-        return send_from_directory(app.static_folder, 'index.html')
-    except:
-        return jsonify({"msg": "File not found"}), 404
 
 if __name__ == '__main__':
     # Initialize test user on startup
