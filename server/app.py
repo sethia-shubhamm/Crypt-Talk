@@ -197,10 +197,24 @@ if __name__ == '__main__':
     create_message_routes(app, mongo)
     create_socketio_handlers(socketio)
     
-    port = int(os.getenv("PORT", 5000))
-    print(f"🚀 Starting server with Socket.IO on http://localhost:{port}")
-    print("📱 Frontend: http://localhost:3000")
-    print("👤 Test user: username='testuser', password='password123'")
+    port = int(os.environ.get("PORT", 5000))
+    is_production = os.getenv("FLASK_ENV") == "production"
+    
+    print(f"🚀 Starting server with Socket.IO on port {port}")
+    print(" Test user: username='testuser', password='password123'")
     print("🔒 End-to-end encryption enabled for messages")
     print("📁 Communication modules loaded from /communication folder")
-    socketio.run(app, debug=True, host='0.0.0.0', port=port, allow_unsafe_werkzeug=True)
+    
+    if is_production:
+        print("🌐 Running in PRODUCTION mode")
+    else:
+        print("🛠️ Running in DEVELOPMENT mode")
+        print("📱 Frontend: http://localhost:3000")
+    
+    socketio.run(
+        app, 
+        host='0.0.0.0', 
+        port=port, 
+        debug=not is_production,
+        allow_unsafe_werkzeug=True
+    )
