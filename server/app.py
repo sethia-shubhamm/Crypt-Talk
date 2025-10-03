@@ -1,16 +1,24 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_pymongo import PyMongo
+from flask_socketio import SocketIO
 from bson.objectid import ObjectId
 import bcrypt
 import os
 from dotenv import load_dotenv
 
+# Import communication modules
+from communication.messaging.message_handler import create_message_routes
+from communication.socketio.socket_handler import create_socketio_handlers, remove_user_from_online
+
 # Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins="*")
+
+# Socket.IO configuration
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 # MongoDB configuration
 app.config["MONGO_URI"] = os.getenv("MONGO_URL")
@@ -173,7 +181,9 @@ def logout(user_id):
         if not user_id:
             return jsonify({"msg": "User id is required"}), 400
         
-        # Simple logout - just return success
+        # Remove user from online users using communication module
+        remove_user_from_online(user_id)
+        
         return '', 200
     
     except Exception as e:
@@ -183,8 +193,14 @@ if __name__ == '__main__':
     # Initialize test user on startup
     init_test_user()
     
+    # Initialize communication modules
+    create_message_routes(app, mongo)
+    create_socketio_handlers(socketio)
+    
     port = int(os.getenv("PORT", 5000))
-    print(f"🚀 Starting server on http://localhost:{port}")
+    print(f"🚀 Starting server with Socket.IO on http://localhost:{port}")
     print("📱 Frontend: http://localhost:3000")
     print("👤 Test user: username='testuser', password='password123'")
-    app.run(debug=True, host='0.0.0.0', port=port)
+    print("🔒 End-to-end encryption enabled for messages")
+    print("📁 Communication modules loaded from /communication folder")
+    socketio.run(app, debug=True, host='0.0.0.0', port=port, allow_unsafe_werkzeug=True)
