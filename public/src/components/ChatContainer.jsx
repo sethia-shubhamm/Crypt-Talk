@@ -2,10 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import ChatInput from "./ChatInput";
 import Logout from "./Logout";
+import SelfDestructTimer from "./SelfDestructTimer";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import { IoArrowBack } from "react-icons/io5";
-import { sendMessageRoute, recieveMessageRoute } from "../utils/APIRoutes";
+import { sendMessageRoute, recieveMessageRoute, downloadFileRoute } from "../utils/APIRoutes";
+import ImagePreview from "./ImagePreview";
+import { toast } from "react-toastify";
 
 export default function ChatContainer({ currentChat, socket, onBackToContacts, isMobile }) {
   const [messages, setMessages] = useState([]);
@@ -50,17 +53,67 @@ export default function ChatContainer({ currentChat, socket, onBackToContacts, i
     });
 
     const msgs = [...messages];
-    msgs.push({ fromSelf: true, message: msg });
+    msgs.push({ fromSelf: true, type: "text", message: msg });
+    setMessages(msgs);
+  };
+
+  const handleSendFile = async (fileData) => {
+    const data = await JSON.parse(
+      localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
+    );
+    
+    // Emit file to socket for real-time notification
+    socket.current.emit("send-file", {
+      to: currentChat._id,
+      from: data._id,
+      file: fileData,
+    });
+
+    const msgs = [...messages];
+    msgs.push({ 
+      fromSelf: true, 
+      type: "file", 
+      ...fileData 
+    });
     setMessages(msgs);
   };
 
   useEffect(() => {
     if (socket.current) {
       socket.current.on("msg-recieve", (msg) => {
-        setArrivalMessage({ fromSelf: false, message: msg });
+        setArrivalMessage({ fromSelf: false, type: "text", message: msg });
+      });
+      
+      socket.current.on("file-recieve", (fileData) => {
+        setArrivalMessage({ fromSelf: false, type: "file", ...fileData });
+      });
+      
+      // Handle conversation self-destruct notification
+      socket.current.on("conversation-destroyed", (data) => {
+        const currentUserId = JSON.parse(localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY))?._id;
+        
+        // Check if this conversation involves the current user
+        if (data.user1_id === currentUserId || data.user2_id === currentUserId) {
+          // Clear messages for this conversation
+          setMessages([]);
+          
+          // Clear any cached conversation data
+          const conversationKey = `conversation_${currentChat._id}`;
+          localStorage.removeItem(conversationKey);
+          
+          // Show toast notification
+          toast.success("🔥 Conversation self-destructed! All messages have been permanently deleted.", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+        }
       });
     }
-  }, []);
+  }, [currentChat]);
 
   useEffect(() => {
     arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
@@ -89,7 +142,10 @@ export default function ChatContainer({ currentChat, socket, onBackToContacts, i
             <h3>{currentChat.username}</h3>
           </div>
         </div>
-        <Logout />
+        <div className="header-controls">
+          <SelfDestructTimer currentChat={currentChat} />
+          <Logout />
+        </div>
       </div>
       <div className="chat-messages">
         {messages.map((message) => {
@@ -100,15 +156,48 @@ export default function ChatContainer({ currentChat, socket, onBackToContacts, i
                   message.fromSelf ? "sended" : "recieved"
                 }`}
               >
-                <div className="content ">
-                  <p>{message.message}</p>
+                <div className="content">
+                  {message.type === "file" ? (
+                    <div className="file-message">
+                      {message.file_type === "image" ? (
+                        <div className="image-preview">
+                          <ImagePreview 
+                            fileId={message.file_id}
+                            filename={message.filename}
+                            onImageClick={() => window.open(`${downloadFileRoute}/${message.file_id}`, '_blank')}
+                          />
+                          <p>{message.original_filename || message.filename}</p>
+                        </div>
+                      ) : (
+                        <div className="file-download">
+                          <div className="file-icon">📄</div>
+                          <div className="file-info">
+                            <p className="filename">{message.original_filename || message.filename}</p>
+                            <p className="filesize">{Math.round(message.file_size / 1024)} KB</p>
+                          </div>
+                          <button 
+                            onClick={() => window.open(`${downloadFileRoute}/${message.file_id}`, '_blank')}
+                            className="download-btn"
+                          >
+                            Download
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <p>{message.message}</p>
+                  )}
                 </div>
               </div>
             </div>
           );
         })}
       </div>
-      <ChatInput handleSendMsg={handleSendMsg} />
+      <ChatInput 
+        handleSendMsg={handleSendMsg} 
+        handleSendFile={handleSendFile}
+        currentChat={currentChat}
+      />
     </Container>
   );
 }
@@ -167,6 +256,13 @@ const Container = styled.div`
         }
       }
     }
+    
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      position: relative;
+    }
   }
   
   .chat-messages {
@@ -200,6 +296,72 @@ const Container = styled.div`
         @media screen and (min-width: 720px) and (max-width: 1080px) {
           max-width: 70%;
         }
+        
+        .file-message {
+          .image-preview {
+            img {
+              max-width: 200px;
+              max-height: 150px;
+              border-radius: 8px;
+              cursor: pointer;
+              transition: transform 0.2s ease;
+              
+              &:hover {
+                transform: scale(1.05);
+              }
+            }
+            
+            p {
+              margin-top: 0.5rem;
+              font-size: 0.9rem;
+              color: #b1b1b1;
+            }
+          }
+          
+          .file-download {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.5rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            
+            .file-icon {
+              font-size: 2rem;
+            }
+            
+            .file-info {
+              flex: 1;
+              
+              .filename {
+                margin: 0;
+                font-weight: bold;
+                font-size: 0.9rem;
+              }
+              
+              .filesize {
+                margin: 0;
+                font-size: 0.8rem;
+                color: #b1b1b1;
+              }
+            }
+            
+            .download-btn {
+              background-color: #9a86f3;
+              color: white;
+              border: none;
+              padding: 0.5rem 1rem;
+              border-radius: 6px;
+              cursor: pointer;
+              font-size: 0.8rem;
+              transition: background-color 0.3s ease;
+              
+              &:hover {
+                background-color: #8a76e3;
+              }
+            }
+          }
+        }
       }
     }
     
@@ -218,13 +380,10 @@ const Container = styled.div`
     }
   }
 
-  /* Mobile styles */
-  @media screen and (max-width: 768px) {
-    grid-template-rows: 8% 82% 10%;
-    
-    .chat-header {
+    /* Mobile styles */
+    @media screen and (max-width: 768px) {
       padding: 0 1rem;
-      gap: 1rem;
+      gap: 0.5rem;
       
       .user-details {
         gap: 0.8rem;
@@ -241,23 +400,15 @@ const Container = styled.div`
           }
         }
       }
-    }
-    
-    .chat-messages {
-      padding: 0.5rem 1rem;
-      gap: 0.8rem;
       
-      .message {
-        .content {
-          max-width: 75%;
-          padding: 0.8rem;
-          font-size: 1rem;
-        }
+      .header-controls {
+        gap: 0.5rem;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: wrap;
       }
-    }
-  }
-
-  /* Very small mobile screens */
+    }  /* Very small mobile screens */
   @media screen and (max-width: 480px) {
     .chat-header {
       padding: 0 0.5rem;

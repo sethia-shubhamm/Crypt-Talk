@@ -34,12 +34,29 @@ def create_socketio_handlers(socketio):
             if to_user in online_users:
                 # Decrypt message for real-time display (client expects decrypted)
                 socketio.emit('msg-recieve', message, room=online_users[to_user])
-                print(f"Message sent from {from_user} to {to_user}: {message}")
+                print(f"📨 Message sent from {from_user} to {to_user}: {message}")
             else:
                 print(f"User {to_user} is offline")
         
         except Exception as e:
             print(f"Error handling message: {e}")
+    
+    @socketio.on('send-file')
+    def handle_send_file(data):
+        try:
+            to_user = data.get('to')
+            from_user = data.get('from')
+            file_data = data.get('file')
+            
+            # Send file notification to recipient if online
+            if to_user in online_users:
+                socketio.emit('file-recieve', file_data, room=online_users[to_user])
+                print(f"📁 File sent from {from_user} to {to_user}: {file_data.get('filename', 'Unknown file')}")
+            else:
+                print(f"User {to_user} is offline")
+        
+        except Exception as e:
+            print(f"Error handling file: {e}")
 
     @socketio.on('disconnect')
     def handle_disconnect():
@@ -53,7 +70,7 @@ def create_socketio_handlers(socketio):
         if user_to_remove:
             del online_users[user_to_remove]
             emit('user-disconnected', {'userId': user_to_remove}, broadcast=True)
-            print(f"User {user_to_remove} disconnected")
+            # Removed disconnect message to reduce noise
 
 def get_online_users():
     """Get list of online users"""

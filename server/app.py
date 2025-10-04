@@ -5,11 +5,14 @@ from flask_socketio import SocketIO
 from bson.objectid import ObjectId
 import bcrypt
 import os
+import logging
 from dotenv import load_dotenv
 
 # Import communication modules
 from communication.messaging.message_handler import create_message_routes
 from communication.socketio.socket_handler import create_socketio_handlers, remove_user_from_online
+from communication.file_sharing.file_handler import create_file_routes
+from communication.self_destruct.timer_handler import create_self_destruct_routes
 
 # Load environment variables
 load_dotenv()
@@ -17,14 +20,43 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app, origins="*")
 
+# Configure logging to reduce noise
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
 # Socket.IO configuration
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", logger=False, engineio_logger=False)
 
 # MongoDB configuration
-app.config["MONGO_URI"] = os.getenv("MONGO_URL")
-mongo = PyMongo(app)
-
-print("✅ Connected to MongoDB")
+try:
+    app.config["MONGO_URI"] = os.getenv("MONGO_URL")
+    mongo = PyMongo(app)
+    
+    # Test MongoDB connection with timeout
+    mongo.db.command('ping')
+    print("✅ Connected to MongoDB")
+except Exception as e:
+    print(f"❌ MongoDB connection failed: {e}")
+    print("⚠️ Server will continue but database operations may fail")
+    # Create a dummy mongo object to prevent errors
+    class DummyDB:
+        def command(self, *args): pass
+        def find_one(self, *args): return None
+        def insert_one(self, *args): return None
+        def update_one(self, *args): return None
+        def delete_many(self, *args): return type('Result', (), {'deleted_count': 0})()
+    
+    class DummyMongo:
+        def __init__(self):
+            self.db = type('DB', (), {
+                'users': DummyDB(),
+                'messages': DummyDB(),
+                'files': DummyDB(),
+                'conversation_timers': DummyDB(),
+                'user_settings': DummyDB()
+            })()
+    
+    mongo = DummyMongo()
 
 # Helper function to serialize MongoDB objects
 def serialize_user(user):
@@ -52,20 +84,23 @@ def find_user_by_id(user_id):
 # Initialize with one test user
 def init_test_user():
     """Create a default test user for easy testing"""
-    existing_user = mongo.db.users.find_one({"username": "testuser"})
-    if not existing_user:
-        hashed_password = bcrypt.hashpw("password123".encode('utf-8'), bcrypt.gensalt())
-        test_user = {
-            "username": "testuser",
-            "email": "test@example.com",
-            "password": hashed_password,
-            "isAvatarImageSet": False,
-            "avatarImage": ""
-        }
-        mongo.db.users.insert_one(test_user)
-        print("✅ Test user created: username='testuser', password='password123'")
-    else:
-        print("✅ Test user already exists: username='testuser', password='password123'")
+    try:
+        existing_user = mongo.db.users.find_one({"username": "testuser"})
+        if not existing_user:
+            hashed_password = bcrypt.hashpw("password123".encode('utf-8'), bcrypt.gensalt())
+            test_user = {
+                "username": "testuser",
+                "email": "test@example.com",
+                "password": hashed_password,
+                "isAvatarImageSet": False,
+                "avatarImage": ""
+            }
+            mongo.db.users.insert_one(test_user)
+            print("✅ Test user created: username='testuser', password='password123'")
+        else:
+            print("✅ Test user already exists: username='testuser', password='password123'")
+    except Exception as e:
+        print(f"⚠️ Could not initialize test user: {e}")
 
 # Routes
 @app.route('/', methods=['GET'])
@@ -195,7 +230,13 @@ if __name__ == '__main__':
     
     # Initialize communication modules
     create_message_routes(app, mongo)
+    create_file_routes(app, mongo)
+    self_destruct_manager = create_self_destruct_routes(app, mongo)
     create_socketio_handlers(socketio)
+    
+    # Connect socketio to self-destruct manager for notifications
+    if hasattr(self_destruct_manager, 'set_socketio'):
+        self_destruct_manager.set_socketio(socketio)
     
     port = int(os.environ.get("PORT", 5000))
     is_production = os.getenv("FLASK_ENV") == "production"

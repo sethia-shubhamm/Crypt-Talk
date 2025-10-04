@@ -7,6 +7,7 @@ from flask import request, jsonify
 from bson.objectid import ObjectId
 from datetime import datetime
 from ..encryption.message_encryption import encrypt_message, decrypt_message
+from ..self_destruct.timer_handler import add_self_destruct_to_message
 
 def create_message_routes(app, mongo):
     """Create Flask routes for message handling"""
@@ -38,6 +39,9 @@ def create_message_routes(app, mongo):
                 "createdAt": datetime.utcnow()
             }
             
+            # Add self-destruct timer if user has one configured
+            message_data = add_self_destruct_to_message(message_data, from_user, mongo)
+            
             result = mongo.db.messages.insert_one(message_data)
             
             if result.inserted_id:
@@ -64,13 +68,26 @@ def create_message_routes(app, mongo):
             
             project_messages = []
             for msg in messages:
-                # Decrypt the message
-                decrypted_text = decrypt_message(msg["message"]["text"], from_user, to_user)
-                
-                project_messages.append({
-                    "fromSelf": str(msg["sender"]) == from_user,
-                    "message": decrypted_text
-                })
+                if msg["message"].get("type") == "file":
+                    # File message
+                    project_messages.append({
+                        "fromSelf": str(msg["sender"]) == from_user,
+                        "type": "file",
+                        "file_id": str(msg["message"]["file_id"]),
+                        "filename": msg["message"]["filename"],
+                        "original_filename": msg["message"]["original_filename"],
+                        "file_type": msg["message"]["file_type"],
+                        "file_size": msg["message"]["file_size"]
+                    })
+                else:
+                    # Text message - decrypt it
+                    decrypted_text = decrypt_message(msg["message"]["text"], from_user, to_user)
+                    
+                    project_messages.append({
+                        "fromSelf": str(msg["sender"]) == from_user,
+                        "type": "text",
+                        "message": decrypted_text
+                    })
             
             return jsonify(project_messages)
         

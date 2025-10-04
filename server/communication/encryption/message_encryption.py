@@ -48,5 +48,5 @@ def decrypt_message(encrypted_data, user1_id, user2_id):
         decrypted_message = fernet.decrypt(decoded_message)
         return decrypted_message.decode()
     except Exception as e:
-        print(f"Decryption error: {e}")
+        print(f"🔐 Decryption error: {e}")
         return encrypted_data if isinstance(encrypted_data, str) else encrypted_data.get('encrypted_message', '')  # Return original if decryption fails
