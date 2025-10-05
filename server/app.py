@@ -87,7 +87,9 @@ def init_test_user():
     try:
         existing_user = mongo.db.users.find_one({"username": "testuser"})
         if not existing_user:
+            # Hash password
             hashed_password = bcrypt.hashpw("password123".encode('utf-8'), bcrypt.gensalt())
+            
             test_user = {
                 "username": "testuser",
                 "email": "test@example.com",
@@ -159,7 +161,9 @@ def login():
             return jsonify({"msg": "Incorrect Username or Password", "status": False})
         
         # Check password
-        if not bcrypt.checkpw(password.encode('utf-8'), user['password']):
+        password_match = bcrypt.checkpw(password.encode('utf-8'), user['password'])
+        
+        if not password_match:
             return jsonify({"msg": "Incorrect Username or Password", "status": False})
         
         # Remove password from response

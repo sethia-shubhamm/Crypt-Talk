@@ -16,14 +16,16 @@ export default function ChatContainer({ currentChat, socket, onBackToContacts, i
   const [arrivalMessage, setArrivalMessage] = useState(null);
 
   useEffect(async () => {
-    const data = await JSON.parse(
-      localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
-    );
-    const response = await axios.post(recieveMessageRoute, {
-      from: data._id,
-      to: currentChat._id,
-    });
-    setMessages(response.data);
+    if (currentChat) {
+      const data = await JSON.parse(
+        localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
+      );
+      const response = await axios.post(recieveMessageRoute, {
+        from: data._id,
+        to: currentChat._id,
+      });
+      setMessages(response.data);
+    }
   }, [currentChat]);
 
   useEffect(() => {
@@ -52,6 +54,8 @@ export default function ChatContainer({ currentChat, socket, onBackToContacts, i
       message: msg,
     });
 
+    // Add message to local state immediately for smooth UX
+    // Don't reload all messages to avoid showing encryption logs
     const msgs = [...messages];
     msgs.push({ fromSelf: true, type: "text", message: msg });
     setMessages(msgs);
@@ -62,13 +66,14 @@ export default function ChatContainer({ currentChat, socket, onBackToContacts, i
       localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
     );
     
-    // Emit file to socket for real-time notification
+    // Emit file to socket for real-time notification to recipient
     socket.current.emit("send-file", {
       to: currentChat._id,
       from: data._id,
       file: fileData,
     });
 
+    // Add file message to local state immediately for smooth UX
     const msgs = [...messages];
     msgs.push({ 
       fromSelf: true, 
@@ -80,6 +85,12 @@ export default function ChatContainer({ currentChat, socket, onBackToContacts, i
 
   useEffect(() => {
     if (socket.current) {
+      // Clean up existing listeners first
+      socket.current.off("msg-recieve");
+      socket.current.off("file-recieve");
+      socket.current.off("conversation-destroyed");
+      
+      // Set up new listeners
       socket.current.on("msg-recieve", (msg) => {
         setArrivalMessage({ fromSelf: false, type: "text", message: msg });
       });
@@ -113,10 +124,21 @@ export default function ChatContainer({ currentChat, socket, onBackToContacts, i
         }
       });
     }
+
+    // Cleanup function to remove listeners when component unmounts or chat changes
+    return () => {
+      if (socket.current) {
+        socket.current.off("msg-recieve");
+        socket.current.off("file-recieve");
+        socket.current.off("conversation-destroyed");
+      }
+    };
   }, [currentChat]);
 
   useEffect(() => {
-    arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
+    if (arrivalMessage) {
+      setMessages((prev) => [...prev, arrivalMessage]);
+    }
   }, [arrivalMessage]);
 
   useEffect(() => {

@@ -11,6 +11,7 @@ import io
 import os
 from werkzeug.utils import secure_filename
 from ..self_destruct.timer_handler import add_self_destruct_to_message
+from .file_encryption import encrypt_file_data, decrypt_file_data, encrypt_image_with_metadata, decrypt_image_with_metadata
 
 # Allowed file extensions
 ALLOWED_EXTENSIONS = {
@@ -88,18 +89,35 @@ def create_file_routes(app, mongo):
             file_type = get_file_type(filename)
             file_data = file.read()
             
-            # Store file in MongoDB
+            # 🔐 ENCRYPT FILE DATA
+            if file_type == 'image':
+                # Use specialized image encryption with metadata
+                encryption_info = encrypt_image_with_metadata(
+                    file_data, from_user, to_user, file.filename, file.content_type
+                )
+            else:
+                # Use standard file encryption for PDFs and other files
+                encryption_info = encrypt_file_data(file_data, from_user, to_user, file.filename)
+            
+            if not encryption_info:
+                return jsonify({"msg": "File encryption failed", "status": False}), 500
+            
+            # Store encrypted file in MongoDB
+            encrypted_data = base64.b64decode(encryption_info['encrypted_data'])
+            
             file_document = {
                 "filename": filename,
                 "original_filename": file.filename,
                 "file_type": file_type,
                 "file_size": file_size,
-                "file_data": file_data,  # Store binary data directly
+                "file_data": encrypted_data,  # Store encrypted binary data
                 "content_type": file.content_type,
                 "uploaded_by": ObjectId(from_user),
                 "shared_with": ObjectId(to_user),
                 "users": [ObjectId(from_user), ObjectId(to_user)],
-                "createdAt": datetime.utcnow()
+                "createdAt": datetime.utcnow(),
+                "file_encryption": encryption_info,  # Store encryption metadata
+                "is_encrypted": True
             }
             
             result = mongo.db.files.insert_one(file_document)
@@ -147,8 +165,32 @@ def create_file_routes(app, mongo):
             if not file_doc:
                 return jsonify({"msg": "File not found", "status": False}), 404
             
-            # Create file-like object from binary data
-            file_data = io.BytesIO(file_doc['file_data'])
+            # 🔓 DECRYPT FILE DATA
+            if file_doc.get('is_encrypted', False):
+                # Get user IDs for decryption
+                user_ids = file_doc['users']
+                user1_id = str(user_ids[0])
+                user2_id = str(user_ids[1])
+                
+                if file_doc.get('file_type') == 'image':
+                    # Decrypt image with metadata
+                    decrypted_data, metadata = decrypt_image_with_metadata(
+                        file_doc['file_encryption'], user1_id, user2_id
+                    )
+                    if decrypted_data is None:
+                        return jsonify({"msg": "File decryption failed", "status": False}), 500
+                else:
+                    # Decrypt regular file
+                    decrypted_data = decrypt_file_data(
+                        file_doc['file_encryption'], user1_id, user2_id
+                    )
+                    if decrypted_data is None:
+                        return jsonify({"msg": "File decryption failed", "status": False}), 500
+                
+                file_data = io.BytesIO(decrypted_data)
+            else:
+                # Unencrypted file (legacy support)
+                file_data = io.BytesIO(file_doc['file_data'])
             
             return send_file(
                 file_data,
@@ -173,15 +215,36 @@ def create_file_routes(app, mongo):
             if file_doc['file_type'] != 'image':
                 return jsonify({"msg": "Preview only available for images", "status": False}), 400
             
-            # Return base64 encoded image for preview
-            file_data_b64 = base64.b64encode(file_doc['file_data']).decode()
+            # 🔓 DECRYPT IMAGE FOR PREVIEW
+            if file_doc.get('is_encrypted', False):
+                # Get user IDs for decryption
+                user_ids = file_doc['users']
+                user1_id = str(user_ids[0])
+                user2_id = str(user_ids[1])
+                
+                # Decrypt image with metadata
+                decrypted_data, metadata = decrypt_image_with_metadata(
+                    file_doc['file_encryption'], user1_id, user2_id
+                )
+                
+                if decrypted_data is None:
+                    return jsonify({"msg": "Image decryption failed", "status": False}), 500
+                
+                # Use decrypted data and metadata
+                file_data_b64 = base64.b64encode(decrypted_data).decode()
+                content_type = metadata.get('content_type', file_doc['content_type'])
+            else:
+                # Unencrypted image (legacy support)
+                file_data_b64 = base64.b64encode(file_doc['file_data']).decode()
+                content_type = file_doc['content_type']
             
             return jsonify({
                 "status": True,
                 "filename": file_doc['original_filename'],
                 "file_type": file_doc['file_type'],
-                "content_type": file_doc['content_type'],
-                "file_data": f"data:{file_doc['content_type']};base64,{file_data_b64}"
+                "content_type": content_type,
+                "file_data": f"data:{content_type};base64,{file_data_b64}",
+                "is_encrypted": file_doc.get('is_encrypted', False)
             })
         
         except Exception as e:
@@ -208,7 +271,41 @@ def create_file_routes(app, mongo):
                 "file_size": file_doc['file_size'],
                 "content_type": file_doc['content_type'],
                 "uploaded_by": str(file_doc['uploaded_by']),
-                "createdAt": file_doc['createdAt'].isoformat()
+                "createdAt": file_doc['createdAt'].isoformat(),
+                "is_encrypted": file_doc.get('is_encrypted', False)
+            })
+        
+        except Exception as e:
+            return jsonify({"msg": f"Server error: {str(e)}", "status": False}), 500
+    
+    @app.route('/api/files/encryption/stats', methods=['GET'])
+    def get_encryption_stats():
+        """Get file encryption statistics"""
+        try:
+            from .file_encryption import get_file_encryption_stats
+            stats = get_file_encryption_stats(mongo)
+            
+            return jsonify({
+                "status": True,
+                "encryption_stats": stats
+            })
+        
+        except Exception as e:
+            return jsonify({"msg": f"Server error: {str(e)}", "status": False}), 500
+    
+    @app.route('/api/files/encryption/migrate/<user1_id>/<user2_id>', methods=['POST'])
+    def migrate_user_files(user1_id, user2_id):
+        """Migrate unencrypted files to encrypted format for specific users"""
+        try:
+            from .file_encryption import migrate_existing_files_to_encryption
+            
+            limit = request.json.get('limit', 10) if request.json else 10
+            migrated_count = migrate_existing_files_to_encryption(mongo, user1_id, user2_id, limit)
+            
+            return jsonify({
+                "status": True,
+                "message": f"Migration completed",
+                "migrated_files": migrated_count
             })
         
         except Exception as e:
