@@ -1,15 +1,17 @@
 import React, { useState, useRef } from "react";
-import { BsEmojiSmileFill } from "react-icons/bs";
+import { BsEmojiSmileFill, BsMicFill } from "react-icons/bs";
 import { IoMdSend } from "react-icons/io";
 import { IoAttach } from "react-icons/io5";
 import styled from "styled-components";
 import Picker from "emoji-picker-react";
 import axios from "axios";
 import { uploadFileRoute } from "../utils/APIRoutes";
+import VoiceRecorder from "./VoiceRecorder";
 
-export default function ChatInput({ handleSendMsg, handleSendFile, currentChat }) {
+export default function ChatInput({ handleSendMsg, handleSendFile, handleSendVoice, currentChat }) {
   const [msg, setMsg] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showVoiceRecorder, setShowVoiceRecorder] = useState(false);
   const fileInputRef = useRef();
   const handleEmojiPickerhideShow = () => {
     setShowEmojiPicker(!showEmojiPicker);
@@ -87,6 +89,14 @@ export default function ChatInput({ handleSendMsg, handleSendFile, currentChat }
     fileInputRef.current.click();
   };
 
+  const openVoiceRecorder = () => {
+    setShowVoiceRecorder(true);
+  };
+
+  const closeVoiceRecorder = () => {
+    setShowVoiceRecorder(false);
+  };
+
   return (
     <Container>
       <div className="button-container">
@@ -104,6 +114,9 @@ export default function ChatInput({ handleSendMsg, handleSendFile, currentChat }
             style={{ display: 'none' }}
           />
         </div>
+        <div className="voice-record">
+          <BsMicFill onClick={openVoiceRecorder} />
+        </div>
       </div>
       <form className="input-container" onSubmit={(event) => sendChat(event)}>
         <input
@@ -116,6 +129,14 @@ export default function ChatInput({ handleSendMsg, handleSendFile, currentChat }
           <IoMdSend />
         </button>
       </form>
+      
+      {showVoiceRecorder && (
+        <VoiceRecorder
+          handleSendVoice={handleSendVoice}
+          currentChat={currentChat}
+          onClose={closeVoiceRecorder}
+        />
+      )}
     </Container>
   );
 }
@@ -196,6 +217,20 @@ const Container = styled.div`
         
         &:hover {
           color: #8a76e3;
+        }
+      }
+    }
+    
+    .voice-record {
+      svg {
+        font-size: 1.5rem;
+        color: #8872ffff;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          color: #ff3838;
+          transform: scale(1.1);
         }
       }
     }
@@ -284,6 +319,12 @@ const Container = styled.div`
           font-size: 1.3rem;
         }
       }
+      
+      .voice-record {
+        svg {
+          font-size: 1.3rem;
+        }
+      }
     }
     
     .input-container {
@@ -323,6 +364,12 @@ const Container = styled.div`
       }
       
       .file-upload {
+        svg {
+          font-size: 1.2rem;
+        }
+      }
+      
+      .voice-record {
         svg {
           font-size: 1.2rem;
         }

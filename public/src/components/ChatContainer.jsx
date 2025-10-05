@@ -8,6 +8,7 @@ import axios from "axios";
 import { IoArrowBack } from "react-icons/io5";
 import { sendMessageRoute, recieveMessageRoute, downloadFileRoute } from "../utils/APIRoutes";
 import ImagePreview from "./ImagePreview";
+import VoiceMessage from "./VoiceMessage";
 import { toast } from "react-toastify";
 
 export default function ChatContainer({ currentChat, socket, onBackToContacts, isMobile }) {
@@ -83,11 +84,34 @@ export default function ChatContainer({ currentChat, socket, onBackToContacts, i
     setMessages(msgs);
   };
 
+  const handleSendVoice = async (voiceData) => {
+    const data = await JSON.parse(
+      localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
+    );
+    
+    // Emit voice to socket for real-time notification to recipient
+    socket.current.emit("send-voice", {
+      to: currentChat._id,
+      from: data._id,
+      voice: voiceData,
+    });
+
+    // Add voice message to local state immediately for smooth UX
+    const msgs = [...messages];
+    msgs.push({ 
+      fromSelf: true, 
+      type: "voice", 
+      ...voiceData 
+    });
+    setMessages(msgs);
+  };
+
   useEffect(() => {
     if (socket.current) {
       // Clean up existing listeners first
       socket.current.off("msg-recieve");
       socket.current.off("file-recieve");
+      socket.current.off("voice-recieve");
       socket.current.off("conversation-destroyed");
       
       // Set up new listeners
@@ -97,6 +121,10 @@ export default function ChatContainer({ currentChat, socket, onBackToContacts, i
       
       socket.current.on("file-recieve", (fileData) => {
         setArrivalMessage({ fromSelf: false, type: "file", ...fileData });
+      });
+      
+      socket.current.on("voice-recieve", (voiceData) => {
+        setArrivalMessage({ fromSelf: false, type: "voice", ...voiceData });
       });
       
       // Handle conversation self-destruct notification
@@ -130,6 +158,7 @@ export default function ChatContainer({ currentChat, socket, onBackToContacts, i
       if (socket.current) {
         socket.current.off("msg-recieve");
         socket.current.off("file-recieve");
+        socket.current.off("voice-recieve");
         socket.current.off("conversation-destroyed");
       }
     };
@@ -206,6 +235,11 @@ export default function ChatContainer({ currentChat, socket, onBackToContacts, i
                         </div>
                       )}
                     </div>
+                  ) : message.type === "voice" ? (
+                    <VoiceMessage 
+                      message={message} 
+                      isOwn={message.fromSelf}
+                    />
                   ) : (
                     <p>{message.message}</p>
                   )}
@@ -218,6 +252,7 @@ export default function ChatContainer({ currentChat, socket, onBackToContacts, i
       <ChatInput 
         handleSendMsg={handleSendMsg} 
         handleSendFile={handleSendFile}
+        handleSendVoice={handleSendVoice}
         currentChat={currentChat}
       />
     </Container>

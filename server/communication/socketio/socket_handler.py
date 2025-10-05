@@ -57,6 +57,23 @@ def create_socketio_handlers(socketio):
         
         except Exception as e:
             print(f"Error handling file: {e}")
+    
+    @socketio.on('send-voice')
+    def handle_send_voice(data):
+        try:
+            to_user = data.get('to')
+            from_user = data.get('from')
+            voice_data = data.get('voice')
+            
+            # Send voice notification to recipient if online
+            if to_user in online_users:
+                socketio.emit('voice-recieve', voice_data, room=online_users[to_user])
+                print(f"🎤 Voice message sent from {from_user} to {to_user}: {voice_data.get('voice_id', 'Unknown voice')}")
+            else:
+                print(f"User {to_user} is offline")
+        
+        except Exception as e:
+            print(f"Error handling voice message: {e}")
 
     @socketio.on('disconnect')
     def handle_disconnect():

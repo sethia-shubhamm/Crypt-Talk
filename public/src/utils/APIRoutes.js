@@ -20,3 +20,9 @@ export const getSelfDestructRoute = `${host}/api/self-destruct/get-timer`;
 export const getConversationTimerRoute = `${host}/api/self-destruct/conversation-info`;
 export const cancelConversationTimerRoute = `${host}/api/self-destruct/cancel-conversation-timer`;
 export const activateTimerRoute = `${host}/api/self-destruct/activate-timer`;
+
+// Voice message routes
+export const uploadVoiceRoute = `${host}/api/voice/upload`;
+export const downloadVoiceRoute = `${host}/api/voice/download`;
+export const voiceInfoRoute = `${host}/api/voice/info`;
+export const deleteVoiceRoute = `${host}/api/voice/delete`;

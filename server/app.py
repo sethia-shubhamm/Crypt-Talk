@@ -13,6 +13,7 @@ from communication.messaging.message_handler import create_message_routes
 from communication.socketio.socket_handler import create_socketio_handlers, remove_user_from_online
 from communication.file_sharing.file_handler import create_file_routes
 from communication.self_destruct.timer_handler import create_self_destruct_routes
+from communication.voice_messages.voice_handler import create_voice_routes
 
 # Load environment variables
 load_dotenv()
@@ -235,6 +236,7 @@ if __name__ == '__main__':
     # Initialize communication modules
     create_message_routes(app, mongo)
     create_file_routes(app, mongo)
+    create_voice_routes(app, mongo)
     self_destruct_manager = create_self_destruct_routes(app, mongo)
     create_socketio_handlers(socketio)
     
