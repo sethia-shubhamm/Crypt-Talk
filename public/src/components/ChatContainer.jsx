@@ -15,20 +15,17 @@ export default function ChatContainer({ currentChat, socket, onBackToContacts, i
   const scrollRef = useRef();
   const [arrivalMessage, setArrivalMessage] = useState(null);
 
-  useEffect(() => {
-    const fetchMessages = async () => {
-      if (currentChat) {
-        const data = await JSON.parse(
-          localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
-        );
-        const response = await axios.post(recieveMessageRoute, {
-          from: data._id,
-          to: currentChat._id,
-        });
-        setMessages(response.data);
-      }
-    };
-    fetchMessages();
+  useEffect(async () => {
+    if (currentChat) {
+      const data = await JSON.parse(
+        localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
+      );
+      const response = await axios.post(recieveMessageRoute, {
+        from: data._id,
+        to: currentChat._id,
+      });
+      setMessages(response.data);
+    }
   }, [currentChat]);
 
   useEffect(() => {
@@ -130,14 +127,13 @@ export default function ChatContainer({ currentChat, socket, onBackToContacts, i
 
     // Cleanup function to remove listeners when component unmounts or chat changes
     return () => {
-      const socketInstance = socket.current;
-      if (socketInstance) {
-        socketInstance.off("msg-recieve");
-        socketInstance.off("file-recieve");
-        socketInstance.off("conversation-destroyed");
+      if (socket.current) {
+        socket.current.off("msg-recieve");
+        socket.current.off("file-recieve");
+        socket.current.off("conversation-destroyed");
       }
     };
-  }, [currentChat, socket]);
+  }, [currentChat]);
 
   useEffect(() => {
     if (arrivalMessage) {

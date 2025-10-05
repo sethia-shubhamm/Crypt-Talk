@@ -18,7 +18,7 @@ from communication.self_destruct.timer_handler import create_self_destruct_route
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, origins=["*", "https://crypt-talks.netlify.app", "http://localhost:3000"])
+CORS(app, origins="*")
 
 # Configure logging to reduce noise
 log = logging.getLogger('werkzeug')
@@ -108,10 +108,6 @@ def init_test_user():
 @app.route('/', methods=['GET'])
 def health_check():
     return jsonify({"status": "ok", "message": "Python Flask backend is running!"})
-
-@app.route('/health', methods=['GET'])
-def health():
-    return jsonify({"status": "healthy", "message": "Backend is running"})
 
 @app.route('/api/auth/register', methods=['POST'])
 def register():
@@ -260,14 +256,10 @@ if __name__ == '__main__':
         print("🛠️ Running in DEVELOPMENT mode")
         print("📱 Frontend: http://localhost:3000")
     
-    if __name__ == '__main__':
-        socketio.run(
-            app, 
-            host='0.0.0.0', 
-            port=port, 
-            debug=not is_production,
-            allow_unsafe_werkzeug=True
-        )
-
-# For WSGI compatibility (Railway, Heroku, etc.)
-application = socketio
+    socketio.run(
+        app, 
+        host='0.0.0.0', 
+        port=port, 
+        debug=not is_production,
+        allow_unsafe_werkzeug=True
+    )
