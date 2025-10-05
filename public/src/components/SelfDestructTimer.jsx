@@ -76,7 +76,7 @@ export default function SelfDestructTimer({ currentChat }) {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [conversationTimer]);
+  }, [conversationTimer, loadConversationTimer]);
 
   const loadCurrentTimer = async () => {
     try {

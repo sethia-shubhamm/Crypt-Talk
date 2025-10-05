@@ -137,7 +137,7 @@ export default function ChatContainer({ currentChat, socket, onBackToContacts, i
         socketInstance.off("conversation-destroyed");
       }
     };
-  }, [currentChat]);
+  }, [currentChat, socket]);
 
   useEffect(() => {
     if (arrivalMessage) {
