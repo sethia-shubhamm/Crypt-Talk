@@ -260,10 +260,14 @@ if __name__ == '__main__':
         print("🛠️ Running in DEVELOPMENT mode")
         print("📱 Frontend: http://localhost:3000")
     
-    socketio.run(
-        app, 
-        host='0.0.0.0', 
-        port=port, 
-        debug=not is_production,
-        allow_unsafe_werkzeug=True
-    )
+    if __name__ == '__main__':
+        socketio.run(
+            app, 
+            host='0.0.0.0', 
+            port=port, 
+            debug=not is_production,
+            allow_unsafe_werkzeug=True
+        )
+
+# For WSGI compatibility (Railway, Heroku, etc.)
+application = socketio
