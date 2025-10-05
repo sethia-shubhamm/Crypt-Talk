@@ -1,4 +1,12 @@
-export const host = process.env.REACT_APP_API_URL || "http://localhost:5000";
+// Debug environment variables
+console.log('🔧 All env vars:', process.env);
+console.log('🔗 API URL from env:', process.env.REACT_APP_API_URL);
+
+// Ensure proper API URL
+const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+console.log('✅ Final API URL:', API_BASE_URL);
+
+export const host = API_BASE_URL;
 
 export const loginRoute = `${host}/api/auth/login`;
 export const registerRoute = `${host}/api/auth/register`;
