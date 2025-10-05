@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 import { setSelfDestructRoute, getSelfDestructRoute, getConversationTimerRoute, cancelConversationTimerRoute, activateTimerRoute } from "../utils/APIRoutes";
 import styled from "styled-components";
@@ -19,7 +19,7 @@ export default function SelfDestructTimer({ currentChat }) {
     if (currentChat) {
       loadConversationTimer();
     }
-  }, [currentChat]);
+  }, [currentChat, loadConversationTimer]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -78,7 +78,7 @@ export default function SelfDestructTimer({ currentChat }) {
     }
   };
 
-  const loadConversationTimer = async () => {
+  const loadConversationTimer = useCallback(async () => {
     if (!currentChat) return;
     
     try {
@@ -97,7 +97,7 @@ export default function SelfDestructTimer({ currentChat }) {
     } catch (error) {
       console.error("Error loading conversation timer:", error);
     }
-  };
+  }, [currentChat]);
 
   const handleTimerChange = async (value) => {
     setCurrentTimer(value);
