@@ -286,7 +286,7 @@ const Container = styled.div`
   
   &.own {
     align-self: flex-end;
-    background-color: #9a86f3;
+    background-color: #160d3dff;
     border-color: #8a76e3;
     
     .play-btn {
