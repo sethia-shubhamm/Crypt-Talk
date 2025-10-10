@@ -229,6 +229,58 @@ def logout(user_id):
     except Exception as e:
         return jsonify({"msg": f"Server error: {str(e)}", "status": False}), 500
 
+# 🛡️ 7-Layer Encryption Logging Endpoints
+@app.route('/api/encryption/stats', methods=['GET'])
+def get_encryption_stats():
+    """Get comprehensive encryption logging statistics"""
+    try:
+        from encryption_logger import get_encryption_stats
+        stats = get_encryption_stats()
+        return jsonify({
+            "status": True,
+            "stats": stats,
+            "msg": "Encryption statistics retrieved successfully"
+        })
+    except Exception as e:
+        return jsonify({
+            "status": False,
+            "msg": f"Error retrieving stats: {str(e)}"
+        }), 500
+
+@app.route('/api/encryption/logs', methods=['GET'])
+def get_encryption_logs():
+    """Get recent encryption log entries"""
+    try:
+        from encryption_logger import encryption_logger
+        import os
+        
+        if not os.path.exists(encryption_logger.log_file):
+            return jsonify({
+                "status": False,
+                "msg": "No encryption log file found"
+            }), 404
+            
+        with open(encryption_logger.log_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        # Get last 50 lines for recent activity
+        lines = content.split('\n')
+        recent_lines = lines[-50:] if len(lines) > 50 else lines
+        
+        return jsonify({
+            "status": True,
+            "logs": '\n'.join(recent_lines),
+            "total_lines": len(lines),
+            "file_size": len(content),
+            "msg": "Recent encryption logs retrieved successfully"
+        })
+        
+    except Exception as e:
+        return jsonify({
+            "status": False,
+            "msg": f"Error retrieving logs: {str(e)}"
+        }), 500
+
 if __name__ == '__main__':
     # Initialize test user on startup
     init_test_user()
