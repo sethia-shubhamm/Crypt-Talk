@@ -6,7 +6,7 @@ Handles message storage, retrieval, and processing with encryption
 from flask import request, jsonify
 from bson.objectid import ObjectId
 from datetime import datetime
-from ..encryption.seven_layer_integration import encrypt_message, decrypt_message
+from ..encryption.message_encryption import encrypt_message, decrypt_message
 from ..self_destruct.timer_handler import add_self_destruct_to_message
 
 def create_message_routes(app, mongo):
@@ -23,18 +23,18 @@ def create_message_routes(app, mongo):
             # Encrypt the message
             encryption_result = encrypt_message(message, from_user, to_user)
             
-            # Store encrypted message with complete encryption metadata in database
+            # Store encrypted message with encryption details in database
             message_data = {
                 "message": {
-                    "text": encryption_result,  # Store full encryption result for 7-layer compatibility
+                    "text": encryption_result['encrypted_message'],
                     "users": [ObjectId(from_user), ObjectId(to_user)]
                 },
                 "encryption_info": {
-                    "key_preview": encryption_result.get('encryption_key', 'N/A'),
-                    "message_hash": encryption_result.get('message_hash', 'N/A'),
-                    "original_length": encryption_result.get('original_length', 0),
-                    "encryption_version": encryption_result.get('encryption_version', '7LAYER_v1.0'),
-                    "security_profile": encryption_result.get('security_profile', 'BALANCED')
+                    "encryption_system": encryption_result.get('encryption_system', '7_layer'),
+                    "operation_id": encryption_result.get('operation_id', 'unknown'),
+                    "original_length": encryption_result['original_length'],
+                    "encrypted_length": encryption_result.get('encrypted_length', 0),
+                    "timestamp": encryption_result.get('timestamp', datetime.utcnow().isoformat())
                 },
                 "users": [ObjectId(from_user), ObjectId(to_user)],
                 "sender": ObjectId(from_user),
@@ -109,17 +109,10 @@ def create_message_routes(app, mongo):
             
             encryption_data = []
             for msg in messages:
-                # Handle both new format (dict) and old format (string)
-                message_text = msg["message"]["text"]
-                if isinstance(message_text, dict):
-                    encrypted_preview = message_text.get('encrypted_message', '')[:50] + "..."
-                else:
-                    encrypted_preview = message_text[:50] + "..." if len(message_text) > 50 else message_text
-                
                 encryption_data.append({
                     "timestamp": msg["createdAt"].isoformat(),
                     "sender": str(msg["sender"]),
-                    "encrypted_message": encrypted_preview,
+                    "encrypted_message": msg["message"]["text"][:50] + "..." if len(msg["message"]["text"]) > 50 else msg["message"]["text"],
                     "encryption_info": msg.get("encryption_info", {})
                 })
             

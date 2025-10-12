@@ -11,7 +11,7 @@ import io
 import os
 from werkzeug.utils import secure_filename
 from ..self_destruct.timer_handler import add_self_destruct_to_message
-from .seven_layer_file_encryption import encrypt_file_data, decrypt_file_data, encrypt_image_with_metadata, decrypt_image_with_metadata
+from .file_encryption import encrypt_file_data, decrypt_file_data, encrypt_image_with_metadata, decrypt_image_with_metadata
 
 # Allowed file extensions
 ALLOWED_EXTENSIONS = {
@@ -279,10 +279,10 @@ def create_file_routes(app, mongo):
             return jsonify({"msg": f"Server error: {str(e)}", "status": False}), 500
     
     @app.route('/api/files/encryption/stats', methods=['GET'])
-    def get_file_encryption_stats_endpoint():
+    def get_encryption_stats():
         """Get file encryption statistics"""
         try:
-            from .seven_layer_file_encryption import get_file_encryption_stats
+            from .file_encryption import get_file_encryption_stats
             stats = get_file_encryption_stats(mongo)
             
             return jsonify({
@@ -297,7 +297,7 @@ def create_file_routes(app, mongo):
     def migrate_user_files(user1_id, user2_id):
         """Migrate unencrypted files to encrypted format for specific users"""
         try:
-            from .seven_layer_file_encryption import migrate_existing_files_to_encryption
+            from .file_encryption import migrate_existing_files_to_encryption
             
             limit = request.json.get('limit', 10) if request.json else 10
             migrated_count = migrate_existing_files_to_encryption(mongo, user1_id, user2_id, limit)

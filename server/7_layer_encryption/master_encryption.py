@@ -39,17 +39,16 @@ import os
 from typing import Dict, Any, Optional, Tuple
 
 # Import the encryption logger
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from encryption_logger import encryption_logger
 
 # Import all 7 layers
-from .layer1_byte_mask import ByteFrequencyMasker
-from .layer2_aes_fernet import AESFernetLayer
-from .layer3_aes_ctr import AESCTRLayer
-from .layer4_chaos_xor import ChaosXORLayer
-from .layer5_random_swapper import RandomSwapper
-from .layer6_noise_embedding import NoiseEmbedder
-from .layer7_integrity_tag import IntegrityTagger
+from layer1_byte_mask import ByteFrequencyMasker
+from layer2_aes_fernet import AESFernetLayer
+from layer3_aes_ctr import AESCTRLayer
+from layer4_chaos_xor import ChaosXORLayer
+from layer5_random_swapper import RandomSwapper
+from layer6_noise_embedding import NoiseEmbedder
+from layer7_integrity_tag import IntegrityTagger
 
 
 class SevenLayerEncryption:
