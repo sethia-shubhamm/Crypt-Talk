@@ -3,7 +3,7 @@
   "name": "crypt-talk-backend",
   "builds": [
     {
-      "src": "app.py",
+      "src": "vercel_app.py",
       "use": "@vercel/python",
       "config": {
         "maxLambdaSize": "50mb",
@@ -14,15 +14,11 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "app.py"
-    },
-    {
-      "src": "/socket.io/(.*)",
-      "dest": "app.py"
+      "dest": "vercel_app.py"
     },
     {
       "src": "/(.*)",
-      "dest": "app.py"
+      "dest": "vercel_app.py"
     }
   ],
   "env": {
