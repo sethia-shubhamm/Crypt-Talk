@@ -16,17 +16,22 @@ export default function Chat() {
   const [currentUser, setCurrentUser] = useState(undefined);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showContacts, setShowContacts] = useState(true);
-  useEffect(async () => {
-    if (!localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)) {
-      navigate("/login");
-    } else {
-      setCurrentUser(
-        await JSON.parse(
-          localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
-        )
-      );
-    }
-  }, []);
+  useEffect(() => {
+    const checkUser = async () => {
+      const userData = localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY);
+      if (!userData) {
+        navigate("/login");
+      } else {
+        try {
+          setCurrentUser(JSON.parse(userData));
+        } catch (error) {
+          console.error("Error parsing user data:", error);
+          navigate("/login");
+        }
+      }
+    };
+    checkUser();
+  }, [navigate]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -42,16 +47,24 @@ export default function Chat() {
     }
   }, [currentUser]);
 
-  useEffect(async () => {
-    if (currentUser) {
-      if (currentUser.isAvatarImageSet) {
-        const data = await axios.get(`${allUsersRoute}/${currentUser._id}`);
-        setContacts(data.data);
-      } else {
-        navigate("/setAvatar");
+  useEffect(() => {
+    const fetchContacts = async () => {
+      if (currentUser) {
+        if (currentUser.isAvatarImageSet) {
+          try {
+            const data = await axios.get(`${allUsersRoute}/${currentUser._id}`);
+            setContacts(data.data);
+          } catch (error) {
+            console.error("Error fetching contacts:", error);
+            setContacts([]);
+          }
+        } else {
+          navigate("/setAvatar");
+        }
       }
-    }
-  }, [currentUser]);
+    };
+    fetchContacts();
+  }, [currentUser, navigate]);
   const handleChatChange = (chat) => {
     setCurrentChat(chat);
     if (isMobile) {

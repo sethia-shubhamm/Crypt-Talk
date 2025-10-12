@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 import { setSelfDestructRoute, getSelfDestructRoute, getConversationTimerRoute, cancelConversationTimerRoute, activateTimerRoute } from "../utils/APIRoutes";
 import styled from "styled-components";
@@ -14,12 +14,54 @@ export default function SelfDestructTimer({ currentChat }) {
   const [timeRemaining, setTimeRemaining] = useState(null);
   const containerRef = useRef(null);
 
+  const loadCurrentTimer = useCallback(async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem("chat-app-current-user"));
+      const response = await axios.get(`${getSelfDestructRoute}/${user._id}`);
+      
+      if (response.data.status) {
+        const timerMinutes = response.data.timer;
+        if (!timerMinutes || timerMinutes === 0) {
+          setCurrentTimer("never");
+        } else if ([10, 20, 30].includes(timerMinutes)) {
+          setCurrentTimer(timerMinutes.toString());
+        } else {
+          setCurrentTimer("custom");
+          setCustomMinutes(timerMinutes.toString());
+        }
+      }
+    } catch (error) {
+      console.error("Error loading timer settings:", error);
+    }
+  }, []);
+
+  const loadConversationTimer = useCallback(async () => {
+    if (!currentChat) return;
+    
+    try {
+      const user = JSON.parse(localStorage.getItem("chat-app-current-user"));
+      const response = await axios.get(`${getConversationTimerRoute}/${user._id}/${currentChat._id}`);
+      
+      if (response.data.status) {
+        setConversationTimer(response.data);
+        if (response.data.has_timer) {
+          const now = new Date();
+          const expiry = new Date(response.data.expires_at);
+          const remaining = Math.max(0, expiry - now);
+          setTimeRemaining(remaining);
+        }
+      }
+    } catch (error) {
+      console.error("Error loading conversation timer:", error);
+    }
+  }, [currentChat]);
+
   useEffect(() => {
     loadCurrentTimer();
     if (currentChat) {
       loadConversationTimer();
     }
-  }, [currentChat]);
+  }, [currentChat, loadCurrentTimer, loadConversationTimer]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -55,49 +97,9 @@ export default function SelfDestructTimer({ currentChat }) {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [conversationTimer]);
+  }, [conversationTimer, loadConversationTimer]);
 
-  const loadCurrentTimer = async () => {
-    try {
-      const user = JSON.parse(localStorage.getItem("chat-app-current-user"));
-      const response = await axios.get(`${getSelfDestructRoute}/${user._id}`);
-      
-      if (response.data.status) {
-        const timerMinutes = response.data.timer;
-        if (!timerMinutes || timerMinutes === 0) {
-          setCurrentTimer("never");
-        } else if ([10, 20, 30].includes(timerMinutes)) {
-          setCurrentTimer(timerMinutes.toString());
-        } else {
-          setCurrentTimer("custom");
-          setCustomMinutes(timerMinutes.toString());
-        }
-      }
-    } catch (error) {
-      console.error("Error loading timer settings:", error);
-    }
-  };
 
-  const loadConversationTimer = async () => {
-    if (!currentChat) return;
-    
-    try {
-      const user = JSON.parse(localStorage.getItem("chat-app-current-user"));
-      const response = await axios.get(`${getConversationTimerRoute}/${user._id}/${currentChat._id}`);
-      
-      if (response.data.status) {
-        setConversationTimer(response.data);
-        if (response.data.has_timer) {
-          const now = new Date();
-          const expiry = new Date(response.data.expires_at);
-          const remaining = Math.max(0, expiry - now);
-          setTimeRemaining(remaining);
-        }
-      }
-    } catch (error) {
-      console.error("Error loading conversation timer:", error);
-    }
-  };
 
   const handleTimerChange = async (value) => {
     setCurrentTimer(value);

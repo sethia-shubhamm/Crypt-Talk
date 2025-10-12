@@ -16,17 +16,26 @@ export default function ChatContainer({ currentChat, socket, onBackToContacts, i
   const scrollRef = useRef();
   const [arrivalMessage, setArrivalMessage] = useState(null);
 
-  useEffect(async () => {
-    if (currentChat) {
-      const data = await JSON.parse(
-        localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
-      );
-      const response = await axios.post(recieveMessageRoute, {
-        from: data._id,
-        to: currentChat._id,
-      });
-      setMessages(response.data);
-    }
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (currentChat) {
+        try {
+          const userData = localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY);
+          if (userData) {
+            const data = JSON.parse(userData);
+            const response = await axios.post(recieveMessageRoute, {
+              from: data._id,
+              to: currentChat._id,
+            });
+            setMessages(response.data);
+          }
+        } catch (error) {
+          console.error("Error fetching messages:", error);
+          setMessages([]);
+        }
+      }
+    };
+    fetchMessages();
   }, [currentChat]);
 
   useEffect(() => {
@@ -107,28 +116,29 @@ export default function ChatContainer({ currentChat, socket, onBackToContacts, i
   };
 
   useEffect(() => {
-    if (socket.current) {
+    const socketInstance = socket.current;
+    if (socketInstance) {
       // Clean up existing listeners first
-      socket.current.off("msg-recieve");
-      socket.current.off("file-recieve");
-      socket.current.off("voice-recieve");
-      socket.current.off("conversation-destroyed");
+      socketInstance.off("msg-recieve");
+      socketInstance.off("file-recieve");
+      socketInstance.off("voice-recieve");
+      socketInstance.off("conversation-destroyed");
       
       // Set up new listeners
-      socket.current.on("msg-recieve", (msg) => {
+      socketInstance.on("msg-recieve", (msg) => {
         setArrivalMessage({ fromSelf: false, type: "text", message: msg });
       });
       
-      socket.current.on("file-recieve", (fileData) => {
+      socketInstance.on("file-recieve", (fileData) => {
         setArrivalMessage({ fromSelf: false, type: "file", ...fileData });
       });
       
-      socket.current.on("voice-recieve", (voiceData) => {
+      socketInstance.on("voice-recieve", (voiceData) => {
         setArrivalMessage({ fromSelf: false, type: "voice", ...voiceData });
       });
       
       // Handle conversation self-destruct notification
-      socket.current.on("conversation-destroyed", (data) => {
+      socketInstance.on("conversation-destroyed", (data) => {
         const currentUserId = JSON.parse(localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY))?._id;
         
         // Check if this conversation involves the current user
@@ -155,14 +165,14 @@ export default function ChatContainer({ currentChat, socket, onBackToContacts, i
 
     // Cleanup function to remove listeners when component unmounts or chat changes
     return () => {
-      if (socket.current) {
-        socket.current.off("msg-recieve");
-        socket.current.off("file-recieve");
-        socket.current.off("voice-recieve");
-        socket.current.off("conversation-destroyed");
+      if (socketInstance) {
+        socketInstance.off("msg-recieve");
+        socketInstance.off("file-recieve");
+        socketInstance.off("voice-recieve");
+        socketInstance.off("conversation-destroyed");
       }
     };
-  }, [currentChat]);
+  }, [currentChat, socket]);
 
   useEffect(() => {
     if (arrivalMessage) {

@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { BsPlayFill, BsPauseFill } from "react-icons/bs";
-import { MdDownload, MdDelete } from "react-icons/md";
+import { MdDownload } from "react-icons/md";
 import { IoTimeOutline } from "react-icons/io5";
 import styled from "styled-components";
 import axios from "axios";
-import { downloadVoiceRoute, voiceInfoRoute, deleteVoiceRoute } from "../utils/APIRoutes";
+import { downloadVoiceRoute, voiceInfoRoute } from "../utils/APIRoutes";
 
 export default function VoiceMessage({ message, isOwn }) {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -18,21 +18,7 @@ export default function VoiceMessage({ message, isOwn }) {
   const audioRef = useRef(null);
   const progressRef = useRef(null);
 
-  useEffect(() => {
-    // Load voice message info
-    loadVoiceInfo();
-    
-    // Set up timer to check expiry
-    const timer = setInterval(() => {
-      if (voiceInfo && !isExpired) {
-        updateTimeRemaining();
-      }
-    }, 60000); // Check every minute
-
-    return () => clearInterval(timer);
-  }, [message.voice_id]);
-
-  const loadVoiceInfo = async () => {
+  const loadVoiceInfo = useCallback(async () => {
     try {
       const response = await axios.get(`${voiceInfoRoute}/${message.voice_id}`);
       if (response.data.status) {
@@ -46,21 +32,41 @@ export default function VoiceMessage({ message, isOwn }) {
         setIsExpired(true);
       }
     }
-  };
+  }, [message.voice_id]);
 
-  const updateTimeRemaining = () => {
-    if (voiceInfo && voiceInfo.expiry_time) {
-      const expiryTime = new Date(voiceInfo.expiry_time);
-      const now = new Date();
-      const remaining = Math.max(0, Math.floor((expiryTime - now) / (1000 * 60)));
-      
-      setTimeRemaining(remaining);
-      
-      if (remaining <= 0) {
-        setIsExpired(true);
+  const updateTimeRemaining = useCallback(async () => {
+    if (voiceInfo) {
+      try {
+        const response = await axios.get(`${voiceInfoRoute}/${message.voice_id}`);
+        if (response.data.status) {
+          const updatedInfo = response.data.voice_message;
+          setTimeRemaining(updatedInfo.time_remaining_minutes);
+          setIsExpired(updatedInfo.is_expired);
+        }
+      } catch (error) {
+        console.error("Error updating time remaining:", error);
+        if (error.response?.status === 404 || error.response?.status === 410) {
+          setIsExpired(true);
+        }
       }
     }
-  };
+  }, [message.voice_id, voiceInfo]);
+
+  useEffect(() => {
+    // Load voice message info
+    loadVoiceInfo();
+    
+    // Set up timer to check expiry
+    const timer = setInterval(() => {
+      if (voiceInfo && !isExpired) {
+        updateTimeRemaining();
+      }
+    }, 60000); // Check every minute
+
+    return () => clearInterval(timer);
+  }, [loadVoiceInfo, updateTimeRemaining, voiceInfo, isExpired]);
+
+
 
   const playVoice = async () => {
     if (isExpired) {
