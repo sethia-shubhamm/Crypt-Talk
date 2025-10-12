@@ -1,142 +1,140 @@
 
-7-LAYER ENCRYPTION SESSION - 2025-10-12 16:01:17
-============================================================
-
-
 LAYER 1: Byte-Frequency Mask
 ──────────────────────────────
-Key:    c9de69e1d6ed5e0d3501acaa9099176bd894026e4533f51cfda3e6ed815a4c35
-Input:  6869 (2 bytes)
-Output: 0884 (2 bytes)
-Change: 2 → 2 (+0 bytes)
+Key:    86f7d95fe0585530da908904475657cdeccbde3f336a6a03433eb2edc266e724
+Input:  48656c6c6f21205468697320697320612073616d706c6520636861742e (29 bytes)
+Output: 2a485e5e77f5daef527972da7972da7ada727a6d495e48da8c527a5373 (29 bytes)
+Change: 29 → 29 (+0 bytes)
 
 
 LAYER 2: AES-Fernet
 ──────────────────────────────
-Key:    daedda6d689c983d3160593b860df6339b041f89c68c149baeecd48ac8733c73
-Input:  0884 (2 bytes)
-Output: 10f46bf1377b18533f6dff8beb8fba99...7138627a5233696b555a317462673d3d (121 bytes)
-Change: 2 → 121 (+119 bytes)
+Key:    b394cbc4a2c253fa6bc70a5434dce42791e4dbc20d7c48d223a39ce943721e9a
+Input:  2a485e5e77f5daef527972da7972da7ada727a6d495e48da8c527a5373 (29 bytes)
+Output: 10895dc4f249f7cfbf6d49cd106c632d...70566561557352484b504f696356303d (141 bytes)
+Change: 29 → 141 (+112 bytes)
 
 
 LAYER 3: AES-CTR
 ──────────────────────────────
-Key:    ae8b611fae4fd68b7a4caa28b9e3c9428e0d464f0ba36bf2209b259e0c4e5fd9
-Input:  10f46bf1377b18533f6dff8beb8fba99...7138627a5233696b555a317462673d3d (121 bytes)
-Output: 10ad8828bcb86c8e2390ed955dc49f77...46ebe0f21cae261ada2bcec67294117d (142 bytes)
-Change: 121 → 142 (+21 bytes)
+Key:    58a5acb423330f9dbbc1fd0c5ba36ca1ab2fa6f360f9f3e7669d430cb0bae601
+Input:  10895dc4f249f7cfbf6d49cd106c632d...70566561557352484b504f696356303d (141 bytes)
+Output: 10993c379cffea1052da3f486d72520d...7f3bbb439a38a52a60423c619d9e2f5b (162 bytes)
+Change: 141 → 162 (+21 bytes)
 
 
 LAYER 4: Chaos-XOR
 ──────────────────────────────
-Key:    4e3b3c71c1871da953973487a27e435abc01bede080c771a1dbd79c9731db745
-Input:  10ad8828bcb86c8e2390ed955dc49f77...46ebe0f21cae261ada2bcec67294117d (142 bytes)
-Output: 10f46bf1377b18533f6dff8beb8fba99...1736950f1bb579f5e4900668ace0ec74 (163 bytes)
-Change: 142 → 163 (+21 bytes)
+Key:    2b02cd40d833a7ad94dc99df8b038b108f54518fad67ba617a94ad5e0ec071a5
+Input:  10993c379cffea1052da3f486d72520d...7f3bbb439a38a52a60423c619d9e2f5b (162 bytes)
+Output: 10895dc4f249f7cfbf6d49cd106c632d...cde33ebd983084589c4915e86098370d (183 bytes)
+Change: 162 → 183 (+21 bytes)
+
+
 
 
 LAYER 5: Random Swapper
 ──────────────────────────────
-Key:    8475ec655505688a88c0d5110878251bddf1aaf4d587faed2f680cfda28afe4d
-Input:  10f46bf1377b18533f6dff8beb8fba99...1736950f1bb579f5e4900668ace0ec74 (163 bytes)
-Output: a30000009c0007000100070008000000...de64240a22ed3bc19ea80678f22163b1 (338 bytes)
-Change: 163 → 338 (+175 bytes)
+Key:    e3a590940a04d2451099cda3b7375af85ab597935ed451670fc8f6eac5bf473a
+Input:  10895dc4f249f7cfbf6d49cd106c632d...cde33ebd983084589c4915e86098370d (183 bytes)
+Output: b70000004a0003000500070006000400...951b8c541bd25373fc0aabd820c51ba2 (272 bytes)
+Change: 183 → 272 (+89 bytes)
 
 
 LAYER 6: Noise Embedding
 ──────────────────────────────
-Key:    ed1d7761f2d30d746a1d12293ed0b30451f332ff9426c70d7c75a13299f33679
-Input:  a30000009c0007000100070008000000...de64240a22ed3bc19ea80678f22163b1 (338 bytes)
-Output: 5400520100000d00030000000a000600...de64240a22ed3bc19ea80678f22163b1 (557 bytes)
-Change: 338 → 557 (+219 bytes)
+Key:    9d40c3e7e6a16d5142663285481e2a7cdd0364827f78e71ed3692ce0c84128ee
+Input:  b70000004a0003000500070006000400...951b8c541bd25373fc0aabd820c51ba2 (272 bytes)
+Output: 4200100100000a000100000010000500...951b8c541bd25373fc0aabd820c51ba2 (453 bytes)
+Change: 272 → 453 (+181 byDtes)
 
 
 LAYER 7: Integrity Tag
 ──────────────────────────────
-Key:    f330536641986aecb7a9802fe43cee46d0989ced5c4116b4b9b98e6f33790e78
-Input:  5400520100000d00030000000a000600...de64240a22ed3bc19ea80678f22163b1 (557 bytes)
-Output: 0110f46bf1377b18533f6dff8beb8fba...0c02cb297f420919421cbf362f5e1297 (616 bytes)
-Change: 557 → 616 (+59 bytes)
+Key:    7363a2a747aadbf29d7ce9dce8b7baefb8c9c5631188b808723be177416c0946
+Input:  4200100100000a000100000010000500...951b8c541bd25373fc0aabd820c51ba2 (453 bytes)
+Output: 0110895dc4f249f7cfbf6d49cd106c63...4412129d994caefc35fce5f16e9c73d7 (512 bytes)
+Change: 453 → 512 (+59 bytes)
 
 
-MESSAGE ENCRYPTION - MSG_1760265101219934
+MESSAGE ENCRYPTION - MSG_1760274708975600
 ==================================================
-Users: 68e38db88a3016806e7e89df ↔ 68e37fc33d3619d2ee455b82
-Message: "hi"
+Users: 68e38db88a3016806e7e89df ↔ 68e37f9d3d3619d2ee455b81
+Message: "Hello! This is a sample chat."
 Profile: STEGANOGRAPHIC
 
 
 LAYER 1: Byte-Frequency Mask
 ──────────────────────────────
-Key:    122bcf03c730b71e00744e4ef9cf8e8a9dbc9b7e29421704cbe4fe1f3c84572f
-Input:  6869 (2 bytes)
-Output: b3f2 (2 bytes)
-Change: 2 → 2 (+0 bytes)
+Key:    9b1ce7c62d264fea6c27360db714e053658b2b7318c36166be93d3d9b7a42300
+Input:  48656c6c6f21205468697320697320612073616d706c6520636861742e (29 bytes)
+Output: 87d13e3e81cda308fb1dfda31dfda3b4a3fdb40abc3ed1a35cfbb41adc (29 bytes)
+Change: 29 → 29 (+0 bytes)
 
 
 LAYER 2: AES-Fernet
 ──────────────────────────────
-Key:    357db91086cfc27c417332fb16d3f92b2191b78cc49d9eebaf7f35a3b21362c9
-Input:  b3f2 (2 bytes)
-Output: 103f6bceac239c591150f8d031e710e8...7235576462306434476e6f4249413d3d (121 bytes)
-Change: 2 → 121 (+119 bytes)
+Key:    ad6b4941b8c2d651223eadaa18db65d73efb69ab5713d595c71a972d96d09994
+Input:  87d13e3e81cda308fb1dfda31dfda3b4a3fdb40abc3ed1a35cfbb41adc (29 bytes)
+Output: 1007260c55494d8e2522e06c5e8eedbd...6d6b5054486c704972466339552d493d (141 bytes)
+Change: 29 → 141 (+112 bytes)
 
 
 LAYER 3: AES-CTR
 ──────────────────────────────
-Key:    ae8ee61801c5fad2734b16d3bd2c4f39f28d3ac4b5bd3640e78386eb2c89e52b
-Input:  103f6bceac239c591150f8d031e710e8...7235576462306434476e6f4249413d3d (121 bytes)
-Output: 106a4d40bd7da4e94e258c48fc3303ad...ed23ae68646db9a8ed4951410d522463 (142 bytes)
-Change: 121 → 142 (+21 bytes)
+Key:    0c5ff8f2926d16f44943a82bdd56d219a003c3eb3854286579bcba17b690a5ac
+Input:  1007260c55494d8e2522e06c5e8eedbd...6d6b5054486c704972466339552d493d (141 bytes)
+Output: 104a66deb27a45521e31f0a78cc544c7...3bdac58d8ff5838a8d6be4e9ce339244 (162 bytes)
+Change: 141 → 162 (+21 bytes)
 
 
 LAYER 4: Chaos-XOR
 ──────────────────────────────
-Key:    a916ac0e9c511b61b24d0302d1cfa947a6bd036164617023db2f2123ca0d6bfd
-Input:  106a4d40bd7da4e94e258c48fc3303ad...ed23ae68646db9a8ed4951410d522463 (142 bytes)
-Output: 103f6bceac239c591150f8d031e710e8...9addab7b2ca32759dbe0b520fc648e81 (163 bytes)
-Change: 142 → 163 (+21 bytes)
+Key:    5446a67e434162ed2a698db65d657b8ffa1c23c957f055b311c980404b47681f
+Input:  104a66deb27a45521e31f0a78cc544c7...3bdac58d8ff5838a8d6be4e9ce339244 (162 bytes)
+Output: 1007260c55494d8e2522e06c5e8eedbd...20852ab0363e256ddb88871bfc937c7b (183 bytes)
+Change: 162 → 183 (+21 bytes)
 
 
 LAYER 5: Random Swapper
 ──────────────────────────────
-Key:    36a7e76e9bf2a2974ac9747a846ee7c2286a1e8b3d2c71c0c3d88e2341adf3d5
-Input:  103f6bceac239c591150f8d031e710e8...9addab7b2ca32759dbe0b520fc648e81 (163 bytes)
-Output: a3000000de000a000300050000000200...4233d6db8ddbd5391133664300402277 (404 bytes)
-Change: 163 → 404 (+241 bytes)
+Key:    8f56926d201d9f4d799e686f578dc8ca14081ac79a1f4953ec65e12109a62e3d
+Input:  1007260c55494d8e2522e06c5e8eedbd...20852ab0363e256ddb88871bfc937c7b (183 bytes)
+Output: b700000092000600080005000a000900...420cbec26905fa20852ab0363e256ddb (344 bytes)
+Change: 183 → 344 (+161 bytes)
 
 
 LAYER 6: Noise Embedding
 ──────────────────────────────
-Key:    b9c3aa9be551d742ee110a4133a97a03197e3792d332ad71e08795ccb540dc9d
-Input:  a3000000de000a000300050000000200...4233d6db8ddbd5391133664300402277 (404 bytes)
-Output: 36009401000008000100000009000400...4233d6db8ddbd5391133664300402277 (547 bytes)
-Change: 404 → 547 (+143 bytes)
+Key:    72a5efded7a460f5b6bb09fd2ef285f0b4af5a58e2e7eba35c6b6ea6fc9cbbcb
+Input:  b700000092000600080005000a000900...420cbec26905fa20852ab0363e256ddb (344 bytes)
+Output: 36005801000008000800000010000e00...420cbec26905fa20852ab0363e256ddb (494 bytes)
+Change: 344 → 494 (+150 bytes)
 
 
 LAYER 7: Integrity Tag
 ──────────────────────────────
-Key:    28fe174df009a679527295e9dc53c8dc15863dbcb10aa0cf04f5106b5c0ed5a6
-Input:  36009401000008000100000009000400...4233d6db8ddbd5391133664300402277 (547 bytes)
-Output: 01103f6bceac239c591150f8d031e710...dff929b77497d72923b9e7c15f10ea35 (606 bytes)
-Change: 547 → 606 (+59 bytes)
+Key:    4358c1ec58be57608d35e087a35f7261b07ea95960efa5fff3a20a49981596a8
+Input:  36005801000008000800000010000e00...420cbec26905fa20852ab0363e256ddb (494 bytes)
+Output: 011007260c55494d8e2522e06c5e8eed...8fd88899d1380793b23781d803798c7d (553 bytes)
+Change: 494 → 553 (+59 bytes)
 
 
 LAYER 8: Steganographic Concealment
 ──────────────────────────────
 🎭 INNOCENT TEXT GENERATED:
    📝 Style: daily_life
-   📏 Length: 50081 characters
-   📊 Expansion: 2 → 50081 chars (25040.5x)
-   🎯 Message Density: 0.00%
+   📏 Length: 45990 characters
+   📊 Expansion: 29 → 45990 chars (1585.9x)
+   🎯 Message Density: 0.06%
 
 📄 SAMPLE INNOCENT TEXT:
 "──────────────────────────────────────────────────
-Started my  morning with  a visit to  the  museum. Noticed  interesting cloud  formations which  got me thinking about  life. Had coffee at  the local  market today.  Overheard someone discussing hist...
+Took a  walk to  the museum this  evening.  The people  enjoying the  outdoors was  incredible. Made me appreciate  work. Had an interesting  day today.  Went to  the museum and saw  birds  singing.  ...
 ──────────────────────────────────────────────────"
 
 🔒 STEGANOGRAPHIC PAYLOAD:
-   Input:  374c41594552312e300842414c414e4345448d83eb68000000003f6bceac239c... (664 bytes)
+   Input:  374c41594552312e300842414c414e43454415a9eb680000000007260c55494d... (611 bytes)
    Output: Hidden in innocent text via whitespace encoding
    Method: Double spaces = binary 1, single spaces = binary 0
 
@@ -144,688 +142,16 @@ Started my  morning with  a visit to  the  museum. Noticed  interesting cloud  f
 LAYER 8: Steganographic Concealment
 ──────────────────────────────
 Key:    737465676f5f776869746573706163655f6b6579
-Input:  374c41594552312e300842414c414e43...dff929b77497d72923b9e7c15f10ea35 (664 bytes)
-Output: 53746172746564206d7920206d6f726e...706c6f7265206d6f726520736f6f6e2e (50110 bytes)
-Change: 664 → 50110 (+49446 bytes)
+Input:  374c41594552312e300842414c414e43...8fd88899d1380793b23781d803798c7d (611 bytes)
+Output: 546f6f6b2061202077616c6b20746f20...626f757420667269656e64736869702e (46018 bytes)
+Change: 611 → 46018 (+45407 bytes)
 
 
 ENCRYPTION COMPLETE
 ────────────────────
-Original: 2 bytes → Encrypted: 50081 bytes
+Original: 29 bytes → Encrypted: 45990 bytes
 Time: 0.100s
 Final: 
 
 ============================================================
-
-
-LAYER 1: Byte-Frequency Mask
-──────────────────────────────
-Key:    5d3b3c828b272ab444d82ced7749ba65bc9563bfce188b8e86adcdcd6f954b84
-Input:  6869 (2 bytes)
-Output: 1bcf (2 bytes)
-Change: 2 → 2 (+0 bytes)
-
-
-LAYER 2: AES-Fernet
-──────────────────────────────
-Key:    988d3537b853f9784fd912032724e058420e110d70d246095eabba536046fae8
-Input:  1bcf (2 bytes)
-Output: 1095b854e3baa34975b2f43f8df0d3ae...42706950596639384463577557513d3d (121 bytes)
-Change: 2 → 121 (+119 bytes)
-
-
-LAYER 3: AES-CTR
-──────────────────────────────
-Key:    a4d52b91202c008921bd69f62cb46243e702317bbefd08c92c0416267b6d6540
-Input:  1095b854e3baa34975b2f43f8df0d3ae...42706950596639384463577557513d3d (121 bytes)
-Output: 109ea4412590e442cafd7719add6e4bf...d819ec7cc1447934d40d52ba66cef138 (142 bytes)
-Change: 121 → 142 (+21 bytes)
-
-
-LAYER 4: Chaos-XOR
-──────────────────────────────
-Key:    bf5cd75f939ae2615d033e457a3e161224e499cff27d886c8a0a168148036e8d
-Input:  109ea4412590e442cafd7719add6e4bf...d819ec7cc1447934d40d52ba66cef138 (142 bytes)
-Output: 1095b854e3baa34975b2f43f8df0d3ae...8bf98186d50eaba12c1136494856071c (163 bytes)
-Change: 142 → 163 (+21 bytes)
-
-
-LAYER 5: Random Swapper
-──────────────────────────────
-Key:    e84b9710a939cb89478490511c6395d67e150d46e584e20e1b3cea450b9214e2
-Input:  1095b854e3baa34975b2f43f8df0d3ae...8bf98186d50eaba12c1136494856071c (163 bytes)
-Output: a3000000620110000400020000000a00...e17eb5b9b39a12014726c329dad41ad4 (536 bytes)
-Change: 163 → 536 (+373 bytes)
-
-
-LAYER 6: Noise Embedding
-──────────────────────────────
-Key:    add918323a78d24d325d008bb2b4daafa5c20dae348c444b49ca1ad1e9a43eb5
-Input:  a3000000620110000400020000000a00...e17eb5b9b39a12014726c329dad41ad4 (536 bytes)
-Output: 5a00180200000e000200000008000600...e17eb5b9b39a12014726c329dad41ad4 (788 bytes)
-Change: 536 → 788 (+252 bytes)
-
-
-LAYER 7: Integrity Tag
-──────────────────────────────
-Key:    2be292496e46d4b3ffc6b86a3d87d0d43bc9d8258d0d92a4d084e3c61e2d2d40
-Input:  5a00180200000e000200000008000600...e17eb5b9b39a12014726c329dad41ad4 (788 bytes)
-Output: 011095b854e3baa34975b2f43f8df0d3...2322950b8f7f85f80923f17d4eeca4d7 (847 bytes)
-Change: 788 → 847 (+59 bytes)
-
-
-MESSAGE ENCRYPTION - MSG_1760265240544689
-==================================================
-Users: 68e38db88a3016806e7e89df ↔ 68e37fc33d3619d2ee455b82
-Message: "hi"
-Profile: STEGANOGRAPHIC
-
-
-LAYER 1: Byte-Frequency Mask
-──────────────────────────────
-Key:    39f29ef6cb4fe9bde478897a5af8170aac96f1d083d5c5d1f0c7abb69d6b7b4c
-Input:  6869 (2 bytes)
-Output: 9e84 (2 bytes)
-Change: 2 → 2 (+0 bytes)
-
-
-LAYER 2: AES-Fernet
-──────────────────────────────
-Key:    09de5fa1aabcbd11817bdc1d7c09b11ff6cbd67b578b9beee2b03c9f5d42ef38
-Input:  9e84 (2 bytes)
-Output: 109a5b025b517738709f54d39ca225ef...4131694563633655724d54517a673d3d (121 bytes)
-Change: 2 → 121 (+119 bytes)
-
-
-LAYER 3: AES-CTR
-──────────────────────────────
-Key:    97e58c57a92807ab7b9d9d0df0ecbed194f0e71f8ba55c80f86c76d66c1be1be
-Input:  109a5b025b517738709f54d39ca225ef...4131694563633655724d54517a673d3d (121 bytes)
-Output: 107906803b6833365e5927e883f19181...1ba3d6fdf7291750aaa2da0b827484b4 (142 bytes)
-Change: 121 → 142 (+21 bytes)
-
-
-LAYER 4: Chaos-XOR
-──────────────────────────────
-Key:    9d1e2709ec50b237f9e61c1fa356c38f71ed4b35421be6c71da7ff8270935895
-Input:  107906803b6833365e5927e883f19181...1ba3d6fdf7291750aaa2da0b827484b4 (142 bytes)
-Output: 109a5b025b517738709f54d39ca225ef...1facef4d2d56e850aaa2db088c47205e (163 bytes)
-Change: 142 → 163 (+21 bytes)
-
-
-LAYER 5: Random Swapper
-──────────────────────────────
-Key:    df907aaafa307b753e686b44e1e9e6a338c2814d82bf4929a4098ce302550b33
-Input:  109a5b025b517738709f54d39ca225ef...1facef4d2d56e850aaa2db088c47205e (163 bytes)
-Output: a3000000c80009000700050004000000...2832081facef4d2d56e850aaa2db088c (382 bytes)
-Change: 163 → 382 (+219 bytes)
-
-
-LAYER 6: Noise Embedding
-──────────────────────────────
-Key:    ae078e3f953f7bc26b3a10018bf1c599cadf305f553c23d6ca38d698f1980b24
-Input:  a3000000c80009000700050004000000...2832081facef4d2d56e850aaa2db088c (382 bytes)
-Output: 30007e0100000700130000000d001900...2832081facef4d2d56e850aaa2db088c (504 bytes)
-Change: 382 → 504 (+122 bytes)
-
-
-LAYER 7: Integrity Tag
-──────────────────────────────
-Key:    97c664bd24603fc74a953dbc2f0480665425541d72a2ee6ca117a70067062847
-Input:  30007e0100000700130000000d001900...2832081facef4d2d56e850aaa2db088c (504 bytes)
-Output: 01109a5b025b517738709f54d39ca225...b642cb2201075aee05cf640844fa6694 (563 bytes)
-Change: 504 → 563 (+59 bytes)
-
-
-LAYER 8: Steganographic Concealment
-──────────────────────────────
-🎭 INNOCENT TEXT GENERATED:
-   📝 Style: daily_life
-   📏 Length: 46712 characters
-   📊 Expansion: 2 → 46712 chars (23356.0x)
-   🎯 Message Density: 0.00%
-
-📄 SAMPLE INNOCENT TEXT:
-"──────────────────────────────────────────────────
-Just finished  reading about  art and found  it  fascinating how  creativity flows.  Planning to  share this knowledge soon.  That conversation brought back  memories of  family time.  Funny how learn...
-──────────────────────────────────────────────────"
-
-🔒 STEGANOGRAPHIC PAYLOAD:
-   Input:  374c41594552312e300842414c414e4345441884eb68000000009a5b025b5177... (621 bytes)
-   Output: Hidden in innocent text via whitespace encoding
-   Method: Double spaces = binary 1, single spaces = binary 0
-
-
-LAYER 8: Steganographic Concealment
-──────────────────────────────
-Key:    737465676f5f776869746573706163655f6b6579
-Input:  374c41594552312e300842414c414e43...b642cb2201075aee05cf640844fa6694 (621 bytes)
-Output: 4a7573742066696e6973686564202072...6874206578706c6f7265206d6f72652e (46741 bytes)
-Change: 621 → 46741 (+46120 bytes)
-
-
-ENCRYPTION COMPLETE
-────────────────────
-Original: 2 bytes → Encrypted: 46712 bytes
-Time: 0.100s
-Final: 
-
-============================================================
-
-
-LAYER 1: Byte-Frequency Mask
-──────────────────────────────
-Key:    e2397ef146bc393f9b1dae5c6e0661285af010ab01b4fcc66a29124ef4d49d3e
-Input:  68696969 (4 bytes)
-Output: 8c131313 (4 bytes)
-Change: 4 → 4 (+0 bytes)
-
-
-LAYER 2: AES-Fernet
-──────────────────────────────
-Key:    949661f907fa71aad7d1d13ae0bc31853c851b9fb5d31c0856357839303e4bea
-Input:  8c131313 (4 bytes)
-Output: 10e1f01a27f63609d2019d7538a1c059...6b574b6b6756685a5034732d65513d3d (121 bytes)
-Change: 4 → 121 (+117 bytes)
-
-
-LAYER 3: AES-CTR
-──────────────────────────────
-Key:    efc55fb86ee0f5db39d94bd156e28acf68b687ee9300cf105cd648c5731cb838
-Input:  10e1f01a27f63609d2019d7538a1c059...6b574b6b6756685a5034732d65513d3d (121 bytes)
-Output: 105a60a2a74dbaf8c5b95c34688a5978...d39db79d0d0e3d08f4a816e05c3812a2 (142 bytes)
-Change: 121 → 142 (+21 bytes)
-
-
-LAYER 4: Chaos-XOR
-──────────────────────────────
-Key:    17a28efa870f53ee1ba20dde6c34fe6eb1466dd799d3b0250463b8ab826b3c83
-Input:  105a60a2a74dbaf8c5b95c34688a5978...d39db79d0d0e3d08f4a816e05c3812a2 (142 bytes)
-Output: 10e1f01a27f63609d2019d7538a1c059...c7d7650ef41665efa34e4d0a12e1905d (163 bytes)
-Change: 142 → 163 (+21 bytes)
-
-
-LAYER 5: Random Swapper
-──────────────────────────────
-Key:    2f0d23564ec7dedd9aab6fb0c8d598095e31607b63505bf1f239b793cea0c741
-Input:  10e1f01a27f63609d2019d7538a1c059...c7d7650ef41665efa34e4d0a12e1905d (163 bytes)
-Output: a30000009c0007000800090006000100...99b14aef73310cda71199b9d5137d795 (338 bytes)
-Change: 163 → 338 (+175 bytes)
-
-
-LAYER 6: Noise Embedding
-──────────────────────────────
-Key:    75f49fea138f672c90d1136ddcb068f0929fcb06fb834112c9972c2ec85628a6
-Input:  a30000009c0007000800090006000100...99b14aef73310cda71199b9d5137d795 (338 bytes)
-Output: 4200520100000a00080000000b001200...99b14aef73310cda71199b9d5137d795 (514 bytes)
-Change: 338 → 514 (+176 bytes)
-
-
-LAYER 7: Integrity Tag
-──────────────────────────────
-Key:    a10603eff786a031bb183337c5e572136e1aae11a11d26426f898e892a87ce96
-Input:  4200520100000a00080000000b001200...99b14aef73310cda71199b9d5137d795 (514 bytes)
-Output: 0110e1f01a27f63609d2019d7538a1c0...5397dcc96a6ebe898853912dbbbf9cc1 (573 bytes)
-Change: 514 → 573 (+59 bytes)
-
-
-MESSAGE ENCRYPTION - MSG_1760265260315867
-==================================================
-Users: 68e38db88a3016806e7e89df ↔ 68e37fc33d3619d2ee455b82
-Message: "hiii"
-Profile: STEGANOGRAPHIC
-
-
-LAYER 1: Byte-Frequency Mask
-──────────────────────────────
-Key:    97d01f8186d9ceeb81950ec68f0ab3a2c0aa12f0d7eddbd935831ae55d87e253
-Input:  68696969 (4 bytes)
-Output: df161616 (4 bytes)
-Change: 4 → 4 (+0 bytes)
-
-
-LAYER 2: AES-Fernet
-──────────────────────────────
-Key:    28ac3d7ee1af472c3c5760f1e92325497ce59c3687cedc9543ed221f42de4f7a
-Input:  df161616 (4 bytes)
-Output: 106b582e7a7e9ca84aceb453d592a2cb...5749524d694655484c4b367039773d3d (121 bytes)
-Change: 4 → 121 (+117 bytes)
-
-
-LAYER 3: AES-CTR
-──────────────────────────────
-Key:    2c75407bbc2458ae733aecfbcbf833404c7b5e68620ed33b8fe92d9ff6898a56
-Input:  106b582e7a7e9ca84aceb453d592a2cb...5749524d694655484c4b367039773d3d (121 bytes)
-Output: 10ba976e0f9e8fed90d54062d415d17a...57de37db00faaaf7ad889121bfc41e77 (142 bytes)
-Change: 121 → 142 (+21 bytes)
-
-
-LAYER 4: Chaos-XOR
-──────────────────────────────
-Key:    a513181c0cf784f404cac668a2598cbbf787dc776d1d4d65b80af16163ea163f
-Input:  10ba976e0f9e8fed90d54062d415d17a...57de37db00faaaf7ad889121bfc41e77 (142 bytes)
-Output: 106b582e7a7e9ca84aceb453d592a2cb...171f8a1fb528390eb5de757e50f8a6bb (163 bytes)
-Change: 142 → 163 (+21 bytes)
-
-
-LAYER 5: Random Swapper
-──────────────────────────────
-Key:    f13edbc6c2d6e9a4b8efe54011d964c95f90afb9e5f63f5a94831c28e48e5551
-Input:  106b582e7a7e9ca84aceb453d592a2cb...171f8a1fb528390eb5de757e50f8a6bb (163 bytes)
-Output: a3000000620110000900030005000000...7e9f97244861f3f93359c445ab434f24 (536 bytes)
-Change: 163 → 536 (+373 bytes)
-
-
-LAYER 6: Noise Embedding
-──────────────────────────────
-Key:    ec8e48a18d16ef9f7444fbe577024a56ff42c054c40ef52e3200f59062055538
-Input:  a3000000620110000900030005000000...7e9f97244861f3f93359c445ab434f24 (536 bytes)
-Output: 8400180200001500030000000f000300...7e9f97244861f3f93359c445ab434f24 (928 bytes)
-Change: 536 → 928 (+392 bytes)
-
-
-LAYER 7: Integrity Tag
-──────────────────────────────
-Key:    8f36eba767c2e61616bcff2c7f003f613d1ac04f12a03b63a866c53b3b8d6a78
-Input:  8400180200001500030000000f000300...7e9f97244861f3f93359c445ab434f24 (928 bytes)
-Output: 01106b582e7a7e9ca84aceb453d592a2...7ffbaa832dd9697edc023dfcbe23f329 (987 bytes)
-Change: 928 → 987 (+59 bytes)
-
-
-LAYER 8: Steganographic Concealment
-──────────────────────────────
-🎭 INNOCENT TEXT GENERATED:
-   📝 Style: daily_life
-   📏 Length: 77519 characters
-   📊 Expansion: 4 → 77519 chars (19379.8x)
-   🎯 Message Density: 0.01%
-
-📄 SAMPLE INNOCENT TEXT:
-"──────────────────────────────────────────────────
-Took a  walk to  the market this  day.  The interesting  cloud formations  was incredible.  Made me appreciate learning.  Had coffee at the  local museum  today. Overheard  someone discussing science ...
-──────────────────────────────────────────────────"
-
-🔒 STEGANOGRAPHIC PAYLOAD:
-   Input:  374c41594552312e300842414c414e4345442c84eb68000000006b582e7a7e9c... (1045 bytes)
-   Output: Hidden in innocent text via whitespace encoding
-   Method: Double spaces = binary 1, single spaces = binary 0
-
-
-LAYER 8: Steganographic Concealment
-──────────────────────────────
-Key:    737465676f5f776869746573706163655f6b6579
-Input:  374c41594552312e300842414c414e43...7ffbaa832dd9697edc023dfcbe23f329 (1045 bytes)
-Output: 546f6f6b2061202077616c6b20746f20...7072656369617465206265617574792e (77586 bytes)
-Change: 1045 → 77586 (+76541 bytes)
-
-
-ENCRYPTION COMPLETE
-────────────────────
-Original: 4 bytes → Encrypted: 77519 bytes
-Time: 0.100s
-Final: 
-
-============================================================
-
-
-LAYER 1: Byte-Frequency Mask
-──────────────────────────────
-Key:    910a37d1a89b7bdd0573df6888dbdf8f753b52cdba1f1b17515b490c7d737d99
-Input:  68696969 (4 bytes)
-Output: 511e1e1e (4 bytes)
-Change: 4 → 4 (+0 bytes)
-
-
-LAYER 2: AES-Fernet
-──────────────────────────────
-Key:    f022273b32f504534e29119410f36c9717a6cf76e72c5748b22fb76562e3b56d
-Input:  511e1e1e (4 bytes)
-Output: 10878c30dd5b37c632c23566d2ceb674...465a5a6155566e465a38506f6f773d3d (121 bytes)
-Change: 4 → 121 (+117 bytes)
-
-
-LAYER 3: AES-CTR
-──────────────────────────────
-Key:    a2f5e46ef07d664bb7693716151fe343cfbb63d3646e5659e5123b51c2b3c653
-Input:  10878c30dd5b37c632c23566d2ceb674...465a5a6155566e465a38506f6f773d3d (121 bytes)
-Output: 103f084a2a454412044c711746b01158...0edaca8dd8d259c3d046727eefccecd7 (142 bytes)
-Change: 121 → 142 (+21 bytes)
-
-
-LAYER 4: Chaos-XOR
-──────────────────────────────
-Key:    659df39aca1757a15eb95c2458a1b70a344de3ff7b75c85314b2c64a9e55503c
-Input:  103f084a2a454412044c711746b01158...0edaca8dd8d259c3d046727eefccecd7 (142 bytes)
-Output: 10878c30dd5b37c632c23566d2ceb674...1a911e0223dd616d0d318c7afe8c2c6a (163 bytes)
-Change: 142 → 163 (+21 bytes)
-
-
-LAYER 5: Random Swapper
-──────────────────────────────
-Key:    9305268027e1eeb13b443bebd10922832b27c5338251221dbe0193a95f39aec0
-Input:  10878c30dd5b37c632c23566d2ceb674...1a911e0223dd616d0d318c7afe8c2c6a (163 bytes)
-Output: a3000000c80009000600000009000a00...c9627b00f11fb7c14e3d9101f641d271 (382 bytes)
-Change: 163 → 382 (+219 bytes)
-
-
-LAYER 6: Noise Embedding
-──────────────────────────────
-Key:    70181d4982d1a6f44d603d1751cc3b31a17d63b8143fc6e7e230b88922f7ee09
-Input:  a3000000c80009000600000009000a00...c9627b00f11fb7c14e3d9101f641d271 (382 bytes)
-Output: 48007e0100000b00070000000b000c00...c9627b00f11fb7c14e3d9101f641d271 (591 bytes)
-Change: 382 → 591 (+209 bytes)
-
-
-LAYER 7: Integrity Tag
-──────────────────────────────
-Key:    5f1ab1baf3bf881843a46304e59b02e9d9e8abf996e3a646e92e8fd9bbe26344
-Input:  48007e0100000b00070000000b000c00...c9627b00f11fb7c14e3d9101f641d271 (591 bytes)
-Output: 0110878c30dd5b37c632c23566d2ceb6...ca18c11c1991895c17ea3300645e6390 (650 bytes)
-Change: 591 → 650 (+59 bytes)
-
-
-MESSAGE ENCRYPTION - MSG_1760265272333104
-==================================================
-Users: 68e38db88a3016806e7e89df ↔ 68e37fc33d3619d2ee455b82
-Message: "hiii"
-Profile: STEGANOGRAPHIC
-
-
-LAYER 1: Byte-Frequency Mask
-──────────────────────────────
-Key:    ad82c8d2409d0cee1cff662662855f85f9a0f15e7a3799c833e649951eba4e79
-Input:  68696969 (4 bytes)
-Output: 70dcdcdc (4 bytes)
-Change: 4 → 4 (+0 bytes)
-
-
-LAYER 2: AES-Fernet
-──────────────────────────────
-Key:    527f320f88ca591ca6e8245b4acb6890b97ebad9e236c3eaa759186bb2d9b694
-Input:  70dcdcdc (4 bytes)
-Output: 1027b589b031ca6b6cd9e41b3f87413e...343752636563433346576e7843673d3d (121 bytes)
-Change: 4 → 121 (+117 bytes)
-
-
-LAYER 3: AES-CTR
-──────────────────────────────
-Key:    dbcf6c8345a787b62d61ffb321e9ec0f87fe5b14a75bbd6354dd66564be2315c
-Input:  1027b589b031ca6b6cd9e41b3f87413e...343752636563433346576e7843673d3d (121 bytes)
-Output: 10fd0da46d7d6971f03a17e5c4135b40...c7fa2a34bcaa3dfb4fe477f2fbf01fee (142 bytes)
-Change: 121 → 142 (+21 bytes)
-
-
-LAYER 4: Chaos-XOR
-──────────────────────────────
-Key:    2a2f12aa310185aa8f13bf4ffcb22a325c50f3950cb37c61369247c29e4de388
-Input:  10fd0da46d7d6971f03a17e5c4135b40...c7fa2a34bcaa3dfb4fe477f2fbf01fee (142 bytes)
-Output: 1027b589b031ca6b6cd9e41b3f87413e...b7013a0f0978a803538784dd6205386a (163 bytes)
-Change: 142 → 163 (+21 bytes)
-
-
-LAYER 5: Random Swapper
-──────────────────────────────
-Key:    4f06423adc003e96d055a99fd99a6fe630dfbaa83ed7355fcb350e95a6e409d5
-Input:  1027b589b031ca6b6cd9e41b3f87413e...b7013a0f0978a803538784dd6205386a (163 bytes)
-Output: a3000000620110000400050000000700...f846da4cc2d9dea3873e398a5741ad13 (536 bytes)
-Change: 163 → 536 (+373 bytes)
-
-
-LAYER 6: Noise Embedding
-──────────────────────────────
-Key:    72adf08fc2b3c28c99bcf1c417a0bed5b479f5fe0a98ff652165582a3d1b4fe9
-Input:  a3000000620110000400050000000700...f846da4cc2d9dea3873e398a5741ad13 (536 bytes)
-Output: 5400180200000d001600000008002b00...f846da4cc2d9dea3873e398a5741ad13 (772 bytes)
-Change: 536 → 772 (+236 bytes)
-
-
-LAYER 7: Integrity Tag
-──────────────────────────────
-Key:    0e4ea85f876a8fd784e92cec18601d609d9c19e9b5a3985b5ee3548d23c2993b
-Input:  5400180200000d001600000008002b00...f846da4cc2d9dea3873e398a5741ad13 (772 bytes)
-Output: 011027b589b031ca6b6cd9e41b3f8741...6845abf291b1ad9db111cf1e0221418d (831 bytes)
-Change: 772 → 831 (+59 bytes)
-
-
-LAYER 8: Steganographic Concealment
-──────────────────────────────
-🎭 INNOCENT TEXT GENERATED:
-   📝 Style: daily_life
-   📏 Length: 66554 characters
-   📊 Expansion: 4 → 66554 chars (16638.5x)
-   🎯 Message Density: 0.01%
-
-📄 SAMPLE INNOCENT TEXT:
-"──────────────────────────────────────────────────
-Took a  walk to  the market this  evening.  The beautiful  flowers blooming  was incredible.  Made me appreciate beauty.  Reading up on science  has been  eye-opening. The  way creativity flows is  re...
-──────────────────────────────────────────────────"
-
-🔒 STEGANOGRAPHIC PAYLOAD:
-   Input:  374c41594552312e300842414c414e4345443884eb680000000027b589b031ca... (889 bytes)
-   Output: Hidden in innocent text via whitespace encoding
-   Method: Double spaces = binary 1, single spaces = binary 0
-
-
-LAYER 8: Steganographic Concealment
-──────────────────────────────
-Key:    737465676f5f776869746573706163655f6b6579
-Input:  374c41594552312e300842414c414e43...6845abf291b1ad9db111cf1e0221418d (889 bytes)
-Output: 546f6f6b2061202077616c6b20746f20...657468696e67206e6577206e6578742e (66609 bytes)
-Change: 889 → 66609 (+65720 bytes)
-
-
-ENCRYPTION COMPLETE
-────────────────────
-Original: 4 bytes → Encrypted: 66554 bytes
-Time: 0.100s
-Final: 
-
-============================================================
-
-
-LAYER 1: Byte-Frequency Mask
-──────────────────────────────
-Key:    9b57f7f1ec5658bdefbf7032f7f56daccb84d54ba1a4dce8ac71e4134ceba229
-Input:  6869 (2 bytes)
-Output: b588 (2 bytes)
-Change: 2 → 2 (+0 bytes)
-
-
-LAYER 2: AES-Fernet
-──────────────────────────────
-Key:    d9b9e6aa9fe6824ed27ada9e3ef55667c0e7202bbf7d2ed51bfab52f06f10646
-Input:  b588 (2 bytes)
-Output: 10c80e0d40ebc15a0fe88550d39bf2d0...52354b6348714a354a54746e31413d3d (121 bytes)
-Change: 2 → 121 (+119 bytes)
-
-
-LAYER 3: AES-CTR
-──────────────────────────────
-Key:    562ec8cac123d464874c6393a85e772ce825c589dc47ac81e79666576f227a74
-Input:  10c80e0d40ebc15a0fe88550d39bf2d0...52354b6348714a354a54746e31413d3d (121 bytes)
-Output: 100ef611139c17dff025041a0f2e880f...2290263b442458c046cf0aa0d7f5d745 (142 bytes)
-Change: 121 → 142 (+21 bytes)
-
-
-LAYER 4: Chaos-XOR
-──────────────────────────────
-Key:    e58f2a63672300553e5f39bea2330a94a46161c304e9bf109fb1231cf6b9fbfa
-Input:  100ef611139c17dff025041a0f2e880f...2290263b442458c046cf0aa0d7f5d745 (142 bytes)
-Output: 10c80e0d40ebc15a0fe88550d39bf2d0...219a0ebcba2756f4e325457aa80ad745 (163 bytes)
-Change: 142 → 163 (+21 bytes)
-
-
-LAYER 5: Random Swapper
-──────────────────────────────
-Key:    806fd7bdda1517ebd10adb4f42120e1f2c4ac72309bd6dee81816c3be9ff158d
-Input:  10c80e0d40ebc15a0fe88550d39bf2d0...219a0ebcba2756f4e325457aa80ad745 (163 bytes)
-Output: a3000000c80009000100030007000600...fdc18a219a0ebcba2756f4e325457aa8 (382 bytes)
-Change: 163 → 382 (+219 bytes)
-
-
-LAYER 6: Noise Embedding
-──────────────────────────────
-Key:    b1a6189640e2c2f174f8a0320d69941256b7e6a5e769cc8473dbea1e6648dc48
-Input:  a3000000c80009000100030007000600...fdc18a219a0ebcba2756f4e325457aa8 (382 bytes)
-Output: 36007e01000008002b0000000e003200...fdc18a219a0ebcba2756f4e325457aa8 (518 bytes)
-Change: 382 → 518 (+136 bytes)
-
-
-LAYER 7: Integrity Tag
-──────────────────────────────
-Key:    e9d88841fa8df9907ea0af3f2cab51fca66fd8232ac4491410ce2362efee3ba8
-Input:  36007e01000008002b0000000e003200...fdc18a219a0ebcba2756f4e325457aa8 (518 bytes)
-Output: 0110c80e0d40ebc15a0fe88550d39bf2...53bb57f651f295e1c5c030b961537b5e (577 bytes)
-Change: 518 → 577 (+59 bytes)
-
-
-MESSAGE ENCRYPTION - MSG_1760265339596449
-==================================================
-Users: 68e38db88a3016806e7e89df ↔ 68e37fc33d3619d2ee455b82
-Message: "hi"
-Profile: STEGANOGRAPHIC
-
-
-LAYER 1: Byte-Frequency Mask
-──────────────────────────────
-Key:    b1a25332e62b8e426d730b779750004b044fe11400e144c0428a97e06ee4834f
-Input:  6869 (2 bytes)
-Output: d8fb (2 bytes)
-Change: 2 → 2 (+0 bytes)
-
-
-LAYER 2: AES-Fernet
-──────────────────────────────
-Key:    8346bac0ad1bb99b3ccff9bc1e306548ed50a9c539994a364f632f6de44079aa
-Input:  d8fb (2 bytes)
-Output: 10e6d4afa545ddf7a141173454376bdb...614d37695f7a3462422d586268773d3d (121 bytes)
-Change: 2 → 121 (+119 bytes)
-
-
-LAYER 3: AES-CTR
-──────────────────────────────
-Key:    717b3c452cdf1e02f9c00eed341567863309076a1aa2876a6c5999e4a0abc7e7
-Input:  10e6d4afa545ddf7a141173454376bdb...614d37695f7a3462422d586268773d3d (121 bytes)
-Output: 107f45219f807447ec7915cd27ecc8be...33e8a6a566f8e8f265e7e5900dd25990 (142 bytes)
-Change: 121 → 142 (+21 bytes)
-
-
-LAYER 4: Chaos-XOR
-──────────────────────────────
-Key:    9b39815ca5558d92e182d84334049cf924be5fb04ac2c1402b7f84dd88d02244
-Input:  107f45219f807447ec7915cd27ecc8be...33e8a6a566f8e8f265e7e5900dd25990 (142 bytes)
-Output: 10e6d4afa545ddf7a141173454376bdb...863a325d7d9807c9d3367d6629a9a691 (163 bytes)
-Change: 142 → 163 (+21 bytes)
-
-
-LAYER 5: Random Swapper
-──────────────────────────────
-Key:    49e868d053b510540f7bf25636f36a1e23e5e6919cb778b68fe73de7c6a2d2bb
-Input:  10e6d4afa545ddf7a141173454376bdb...863a325d7d9807c9d3367d6629a9a691 (163 bytes)
-Output: a300000036010e000000040008000100...2cc2124ba693efa96b339b76da68a869 (492 bytes)
-Change: 163 → 492 (+329 bytes)
-
-
-LAYER 6: Noise Embedding
-──────────────────────────────
-Key:    a63144e8d49b844abc1e53afdd3713f1ce7cbd7cdd5f5afeb4c64888c729ad75
-Input:  a300000036010e000000040008000100...2cc2124ba693efa96b339b76da68a869 (492 bytes)
-Output: 5a00ec0100000e00030000000a000a00...2cc2124ba693efa96b339b76da68a869 (739 bytes)
-Change: 492 → 739 (+247 bytes)
-
-
-LAYER 7: Integrity Tag
-──────────────────────────────
-Key:    54a4d5dcd01ff1053da4df4f3d88a438491482f27e1185f25b0421c494cbdda0
-Input:  5a00ec0100000e00030000000a000a00...2cc2124ba693efa96b339b76da68a869 (739 bytes)
-Output: 0110e6d4afa545ddf7a141173454376b...587d32475cde8823aaaef1d5ea1e8b57 (798 bytes)
-Change: 739 → 798 (+59 bytes)
-
-
-LAYER 8: Steganographic Concealment
-──────────────────────────────
-🎭 INNOCENT TEXT GENERATED:
-   📝 Style: daily_life
-   📏 Length: 64134 characters
-   📊 Expansion: 2 → 64134 chars (32067.0x)
-   🎯 Message Density: 0.00%
-
-📄 SAMPLE INNOCENT TEXT:
-"──────────────────────────────────────────────────
-That documentary  brought back  memories of school  days.  Funny how  growth always  teach us.  Spent the evening at  the market watching people  enjoying the  outdoors. Simple  moments like these rem...
-──────────────────────────────────────────────────"
-
-🔒 STEGANOGRAPHIC PAYLOAD:
-   Input:  374c41594552312e300842414c414e4345447b84eb6800000000e6d4afa545dd... (856 bytes)
-   Output: Hidden in innocent text via whitespace encoding
-   Method: Double spaces = binary 1, single spaces = binary 0
-
-
-LAYER 8: Steganographic Concealment
-──────────────────────────────
-Key:    737465676f5f776869746573706163655f6b6579
-Input:  374c41594552312e300842414c414e43...587d32475cde8823aaaef1d5ea1e8b57 (856 bytes)
-Output: 5468617420646f63756d656e74617279...64206d652061626f757420776f726b2e (64184 bytes)
-Change: 856 → 64184 (+63328 bytes)
-
-
-ENCRYPTION COMPLETE
-────────────────────
-Original: 2 bytes → Encrypted: 64134 bytes
-Time: 0.100s
-Final: 
-
-============================================================
-
-
-LAYER 8: Steganographic Extraction
-──────────────────────────────
-🔍 PROCESSING INNOCENT TEXT:
-   📄 Length: 64134 characters
-   📦 Hidden Data: 856 bytes extracted
-   📊 Compression: 64134 → 856 chars (74.9x)
-
-📄 INNOCENT TEXT PROCESSED:
-"──────────────────────────────────────────────────
-That documentary  brought back  memories of school  days.  Funny how  growth always  teach us.  Spent the evening at  the market watching people  enjoying the  outdoors. Simple  moments like these rem...
-──────────────────────────────────────────────────"
-
-🔓 EXTRACTED PAYLOAD:
-   Method: Whitespace pattern analysis
-   Output: 374c41594552312e300842414c414e4345447b84eb6800000000e6d4afa545dd... (856 bytes)
-   Status: ✅ Successfully extracted hidden data
-
-
-LAYER 8: Steganographic Extraction
-──────────────────────────────
-Key:    737465676f5f776869746573706163655f6b6579
-Input:  5468617420646f63756d656e74617279...64206d652061626f757420776f726b2e (64184 bytes)
-Output: 374c41594552312e300842414c414e43...587d32475cde8823aaaef1d5ea1e8b57 (856 bytes)
-Change: 64184 → 856 (-63328 bytes)
-
-
-LAYER 8: Steganographic Extraction
-──────────────────────────────
-🔍 PROCESSING INNOCENT TEXT:
-   📄 Length: 64134 characters
-   📦 Hidden Data: 856 bytes extracted
-   📊 Compression: 64134 → 856 chars (74.9x)
-
-📄 INNOCENT TEXT PROCESSED:
-"──────────────────────────────────────────────────
-That documentary  brought back  memories of school  days.  Funny how  growth always  teach us.  Spent the evening at  the market watching people  enjoying the  outdoors. Simple  moments like these rem...
-──────────────────────────────────────────────────"
-
-🔓 EXTRACTED PAYLOAD:
-   Method: Whitespace pattern analysis
-   Output: 374c41594552312e300842414c414e4345447b84eb6800000000e6d4afa545dd... (856 bytes)
-   Status: ✅ Successfully extracted hidden data
-
-
-LAYER 8: Steganographic Extraction
-──────────────────────────────
-Key:    737465676f5f776869746573706163655f6b6579
-Input:  5468617420646f63756d656e74617279...64206d652061626f757420776f726b2e (64184 bytes)
-Output: 374c41594552312e300842414c414e43...587d32475cde8823aaaef1d5ea1e8b57 (856 bytes)
-Change: 64184 → 856 (-63328 bytes)
 
