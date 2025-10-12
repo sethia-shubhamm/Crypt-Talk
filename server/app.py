@@ -15,6 +15,9 @@ from communication.file_sharing.file_handler import create_file_routes
 from communication.self_destruct.timer_handler import create_self_destruct_routes
 from communication.voice_messages.voice_handler import create_voice_routes
 
+# Import steganography test routes
+from stego_test_routes import create_stego_test_routes
+
 # Load environment variables
 load_dotenv()
 
@@ -239,6 +242,9 @@ if __name__ == '__main__':
     create_voice_routes(app, mongo)
     self_destruct_manager = create_self_destruct_routes(app, mongo)
     create_socketio_handlers(socketio)
+    
+    # Initialize steganography test routes
+    create_stego_test_routes(app)
     
     # Connect socketio to self-destruct manager for notifications
     if hasattr(self_destruct_manager, 'set_socketio'):
