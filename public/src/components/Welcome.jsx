@@ -4,12 +4,22 @@ import Robot from "../assets/robot.gif";
 import Logout from "./Logout";
 export default function Welcome() {
   const [userName, setUserName] = useState("");
-  useEffect(async () => {
-    setUserName(
-      await JSON.parse(
-        localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
-      ).username
-    );
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const userData = localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY);
+        if (userData) {
+          const parsedData = JSON.parse(userData);
+          setUserName(parsedData?.username || "Guest");
+        } else {
+          setUserName("Guest");
+        }
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+        setUserName("Guest");
+      }
+    };
+    getUserData();
   }, []);
   return (
     <Container>

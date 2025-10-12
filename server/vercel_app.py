@@ -13,12 +13,12 @@ os.environ['PYTHONPATH'] = os.path.dirname(os.path.abspath(__file__))
 
 app = Flask(__name__)
 
-# Configure CORS more explicitly
+# Configure CORS more explicitly - allow all origins
 CORS(app, 
-     origins=["*"],
+     origins="*",
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-     allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Credentials"],
-     supports_credentials=True)
+     allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+     supports_credentials=False)
 
 @app.route('/')
 def health_check():
@@ -37,30 +37,25 @@ def test_endpoint():
         "status": "success"
     })
 
-# Handle preflight requests
-@app.before_request
-def handle_preflight():
-    if request.method == "OPTIONS":
-        response = jsonify()
-        response.headers.add("Access-Control-Allow-Origin", "*")
-        response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
-        response.headers.add("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS")
-        return response
-
-# Add CORS headers to all responses
+# Handle all CORS in one place
 @app.after_request
 def after_request(response):
     response.headers.add("Access-Control-Allow-Origin", "*")
-    response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
-    response.headers.add("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS")
+    response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
+    response.headers.add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+    response.headers.add("Access-Control-Max-Age", "3600")
     return response
 
+# Handle preflight OPTIONS requests for all routes
+@app.route('/<path:path>', methods=['OPTIONS'])
+@app.route('/', methods=['OPTIONS'])
+def handle_options(path=None):
+    return '', 200
+
 # Basic user registration endpoint for testing
-@app.route('/api/auth/register', methods=['POST', 'OPTIONS'])
+@app.route('/api/auth/register', methods=['POST'])
 def register():
     """Basic registration endpoint"""
-    if request.method == 'OPTIONS':
-        return jsonify({}), 200
         
     try:
         data = request.get_json()
@@ -109,11 +104,40 @@ def register():
             "status": False
         }), 500
 
-@app.route('/api/auth/login', methods=['POST', 'OPTIONS'])
+@app.route('/api/auth/allusers/<user_id>', methods=['GET'])
+def get_all_users(user_id):
+    """Get all users except current user"""
+    try:
+        # Return some dummy users for testing
+        users = [
+            {
+                "_id": "user_testuser1",
+                "username": "testuser1",
+                "email": "testuser1@crypttalk.com",
+                "avatarImage": "",
+                "isAvatarImageSet": False
+            },
+            {
+                "_id": "user_testuser2", 
+                "username": "testuser2",
+                "email": "testuser2@crypttalk.com",
+                "avatarImage": "",
+                "isAvatarImageSet": False
+            }
+        ]
+        
+        # Filter out current user
+        filtered_users = [user for user in users if user["_id"] != user_id]
+        
+        return jsonify(filtered_users), 200
+        
+    except Exception as e:
+        print(f"Get users error: {str(e)}")
+        return jsonify({"error": f"Failed to get users: {str(e)}"}), 500
+
+@app.route('/api/auth/login', methods=['POST'])
 def login():
     """Basic login endpoint"""
-    if request.method == 'OPTIONS':
-        return jsonify({}), 200
         
     try:
         data = request.get_json()
