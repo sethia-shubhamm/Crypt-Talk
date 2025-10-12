@@ -1,4 +1,4 @@
-export const host = "https://crypt-talk-pl4s952j5-sethia-shubhamms-projects.vercel.app";
+export const host = "http://localhost:5000";
 
 export const loginRoute = `${host}/api/auth/login`;
 export const registerRoute = `${host}/api/auth/register`;
