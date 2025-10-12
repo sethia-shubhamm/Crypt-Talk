@@ -247,6 +247,9 @@ if __name__ == '__main__':
     if hasattr(self_destruct_manager, 'set_socketio'):
         self_destruct_manager.set_socketio(socketio)
     
+    # For Vercel deployment compatibility
+    application = app
+    
     port = int(os.environ.get("PORT", 5000))
     is_production = os.getenv("FLASK_ENV") == "production"
     
@@ -261,10 +264,12 @@ if __name__ == '__main__':
         print("🛠️ Running in DEVELOPMENT mode")
         print("📱 Frontend: http://localhost:3000")
     
-    socketio.run(
-        app, 
-        host='0.0.0.0', 
-        port=port, 
-        debug=not is_production,
-        allow_unsafe_werkzeug=True
-    )
+    # Only run socketio.run in development/local environment
+    if __name__ == "__main__":
+        socketio.run(
+            app, 
+            host='0.0.0.0', 
+            port=port, 
+            debug=not is_production,
+            allow_unsafe_werkzeug=True
+        )

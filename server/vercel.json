@@ -1,0 +1,35 @@
+{
+  "version": 2,
+  "name": "crypt-talk-backend",
+  "builds": [
+    {
+      "src": "app.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "app.py"
+    },
+    {
+      "src": "/socket.io/(.*)",
+      "dest": "app.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "app.py"
+    }
+  ],
+  "env": {
+    "FLASK_ENV": "production",
+    "PYTHONUNBUFFERED": "1"
+  },
+  "functions": {
+    "app.py": {
+      "maxDuration": 30,
+      "memory": 1024
+    }
+  },
+  "regions": ["iad1"]
+}
