@@ -566,170 +566,7 @@ python app.py
 
 ## 🚢 Deployment
 
-### Render + Vercel Deployment (Recommended)
-
-Deploy your backend to **Render** (free tier) and frontend to **Vercel** (free tier) in minutes!
-
----
-
-### Part 1: Backend Deployment (Render)
-
-#### Step 1: Setup MongoDB Atlas
-```bash
-1. Go to https://www.mongodb.com/cloud/atlas/register
-2. Create a free M0 cluster (512MB storage)
-3. Database Access → Create user with password
-4. Network Access → Add IP: 0.0.0.0/0 (allow all)
-5. Get connection string:
-   mongodb+srv://<username>:<password>@cluster.mongodb.net/crypttalk
-```
-
-#### Step 2: Deploy Backend to Render
-
-**Option A: Deploy from GitHub (Recommended)**
-```bash
-1. Push your code to GitHub
-2. Go to https://render.com and sign in
-3. Dashboard → "New +" → "Web Service"
-4. Connect your GitHub repository
-5. Configure:
-   - Name: crypt-talk-backend
-   - Region: Oregon (US West)
-   - Branch: main
-   - Root Directory: server
-   - Runtime: Python 3
-   - Build Command: pip install -r requirements.txt
-   - Start Command: python app.py
-6. Click "Create Web Service"
-```
-
-**Option B: Manual Git Deployment**
-```bash
-# From server folder
-cd server
-
-# Initialize git if needed
-git init
-git add .
-git commit -m "Initial commit"
-
-# Deploy to Render (follow dashboard prompts)
-```
-
-#### Step 3: Configure Render Environment Variables
-```bash
-In Render Dashboard → Your Service → Environment:
-
-Add these variables:
-┌─────────────────────┬────────────────────────────────────────────┐
-│ Key                 │ Value                                      │
-├─────────────────────┼────────────────────────────────────────────┤
-│ MONGO_URL           │ mongodb+srv://user:pass@cluster.mongodb... │
-│ FLASK_ENV           │ production                                 │
-│ PORT                │ 5000                                       │
-│ PYTHONUNBUFFERED    │ 1                                          │
-└─────────────────────┴────────────────────────────────────────────┘
-
-Save → Render will auto-deploy with new variables
-```
-
-#### Step 4: Get Your Backend URL
-```bash
-1. Wait for deployment to complete (~2-3 minutes)
-2. Copy your URL: https://crypt-talk-backend.onrender.com
-3. Test: https://your-app.onrender.com/api/auth/allusers/test
-```
-
----
-
-### Part 2: Frontend Deployment (Vercel)
-
-#### Step 1: Update Frontend Environment
-```bash
-# In public/.env file
-REACT_APP_API_URL=https://crypt-talk-backend.onrender.com
-REACT_APP_LOCALHOST_KEY=chat-app-current-user
-```
-
-#### Step 2: Deploy to Vercel
-
-**Option A: Vercel CLI (Fastest)**
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Navigate to frontend
-cd public
-
-# Login to Vercel
-vercel login
-
-# Deploy
-vercel
-
-# Follow prompts:
-# - Set up and deploy? Yes
-# - Which scope? Your account
-# - Link to existing project? No
-# - Project name? crypt-talk
-# - In which directory is your code? ./
-# - Override settings? No
-
-# Production deployment
-vercel --prod
-```
-
-**Option B: Vercel Dashboard**
-```bash
-1. Go to https://vercel.com and sign in
-2. "New Project" → Import your GitHub repo
-3. Configure:
-   - Framework Preset: Create React App
-   - Root Directory: public
-   - Build Command: npm run build
-   - Output Directory: build
-4. Environment Variables → Add:
-   - REACT_APP_API_URL: https://your-backend.onrender.com
-   - REACT_APP_LOCALHOST_KEY: chat-app-current-user
-5. Click "Deploy"
-```
-
-#### Step 3: Access Your Live App
-```bash
-Your app is live at: https://crypt-talk.vercel.app
-Backend API: https://crypt-talk-backend.onrender.com
-```
-
----
-
-### Important: Update Backend CORS
-
-After deploying frontend, update [server/app.py](server/app.py):
-
-```python
-# Replace CORS configuration
-CORS(app, 
-     resources={r"/*": {
-         "origins": [
-             "https://crypt-talk.vercel.app",  # Your Vercel domain
-             "http://localhost:3000"            # Local development
-         ],
-         "supports_credentials": True
-     }})
-
-# Update Socket.IO CORS
-socketio = SocketIO(app, 
-                   cors_allowed_origins=[
-                       "https://crypt-talk.vercel.app",
-                       "http://localhost:3000"
-                   ])
-```
-
-Redeploy backend on Render after this change.
-
----
-
-### Docker Deployment (Alternative)
+### Docker Deployment
 
 #### Build and Run
 ```bash
@@ -744,77 +581,18 @@ docker build -t crypt-talk-frontend .
 docker run -p 3000:3000 crypt-talk-frontend
 ```
 
----
-
 ### Production Checklist
 
-**Backend (Render):**
-- [x] HTTPS/TLS (automatic on Render)
-- [x] WSS for Socket.IO (automatic with HTTPS)
-- [x] MongoDB Atlas with authentication
-- [x] Environment variables configured
-- [ ] Update CORS to specific frontend domain
-- [ ] Add rate limiting middleware
-- [ ] Set up health checks
-- [ ] Monitor logs in Render dashboard
-
-**Frontend (Vercel):**
-- [x] HTTPS (automatic on Vercel)
-- [x] CDN distribution (automatic)
-- [x] Environment variables set
-- [ ] Custom domain (optional)
-- [ ] Enable analytics (optional)
-
----
-
-### Troubleshooting
-
-#### Issue: Render Build Fails
-```bash
-# Check Render logs in dashboard
-# Common fixes:
-1. Ensure requirements.txt includes all dependencies
-2. Verify Python version (3.11 specified in render.yaml)
-3. Check for syntax errors in app.py
-```
-
-#### Issue: Frontend Can't Connect to Backend
-```bash
-# Verify:
-1. REACT_APP_API_URL matches Render backend URL
-2. CORS is configured in app.py
-3. Backend is running (check Render dashboard)
-4. Rebuild frontend: npm run build && vercel --prod
-```
-
-#### Issue: Socket.IO Connection Failed
-```bash
-# Ensure:
-1. Backend uses wss:// (automatic with HTTPS)
-2. CORS origins include your Vercel domain
-3. No firewall blocking WebSocket connections
-```
-
-#### Issue: Render Free Tier Sleeps
-```bash
-# Render free tier sleeps after 15 minutes of inactivity
-# First request after sleep takes ~30 seconds
-# Solutions:
-1. Upgrade to paid tier ($7/month)
-2. Use cron job to ping every 10 minutes
-3. Add loading message for cold starts
-```
-
----
-
-### Cost Breakdown
-
-| Service | Plan | Cost | Limits |
-|---------|------|------|--------|
-| Render | Free | $0 | 750 hrs/month, sleeps after 15min |
-| Vercel | Hobby | $0 | 100GB bandwidth/month |
-| MongoDB Atlas | M0 | $0 | 512MB storage, shared cluster |
-| **Total** | | **$0/month** | Perfect for portfolio projects |
+- [ ] Set `FLASK_ENV=production`
+- [ ] Use strong MongoDB credentials
+- [ ] Enable HTTPS/TLS certificates
+- [ ] Configure WSS for Socket.IO
+- [ ] Set up reverse proxy (Nginx/Apache)
+- [ ] Enable rate limiting
+- [ ] Configure CORS properly
+- [ ] Set up monitoring and logging
+- [ ] Regular backups of MongoDB
+- [ ] Update dependencies regularly
 
 **For complete deployment guide, see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**
 
