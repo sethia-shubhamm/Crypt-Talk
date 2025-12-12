@@ -566,87 +566,94 @@ python app.py
 
 ## 🚢 Deployment
 
-### Railway Backend Deployment (Recommended)
+### Render + Vercel Deployment (Recommended)
 
-#### Prerequisites
-- GitHub account
-- Railway account (sign up at [railway.app](https://railway.app))
-- MongoDB Atlas account (free tier available)
+Deploy your backend to **Render** (free tier) and frontend to **Vercel** (free tier) in minutes!
+
+---
+
+### Part 1: Backend Deployment (Render)
 
 #### Step 1: Setup MongoDB Atlas
 ```bash
 1. Go to https://www.mongodb.com/cloud/atlas/register
-2. Create a free cluster
-3. Under "Database Access", create a user with password
-4. Under "Network Access", add IP 0.0.0.0/0 (allow from anywhere)
-5. Get your connection string: mongodb+srv://<username>:<password>@cluster.mongodb.net/crypttalk
+2. Create a free M0 cluster (512MB storage)
+3. Database Access → Create user with password
+4. Network Access → Add IP: 0.0.0.0/0 (allow all)
+5. Get connection string:
+   mongodb+srv://<username>:<password>@cluster.mongodb.net/crypttalk
 ```
 
-#### Step 2: Deploy Backend to Railway
+#### Step 2: Deploy Backend to Render
 
 **Option A: Deploy from GitHub (Recommended)**
 ```bash
 1. Push your code to GitHub
-2. Go to https://railway.app and sign in
-3. Click "New Project" → "Deploy from GitHub repo"
-4. Select your repository
-5. Railway will auto-detect Python and deploy
+2. Go to https://render.com and sign in
+3. Dashboard → "New +" → "Web Service"
+4. Connect your GitHub repository
+5. Configure:
+   - Name: crypt-talk-backend
+   - Region: Oregon (US West)
+   - Branch: main
+   - Root Directory: server
+   - Runtime: Python 3
+   - Build Command: pip install -r requirements.txt
+   - Start Command: python app.py
+6. Click "Create Web Service"
 ```
 
-**Option B: Deploy with Railway CLI**
+**Option B: Manual Git Deployment**
 ```bash
-# Install Railway CLI
-npm i -g @railway/cli
-
-# Login to Railway
-railway login
-
-# Navigate to server folder
+# From server folder
 cd server
 
-# Initialize project
-railway init
+# Initialize git if needed
+git init
+git add .
+git commit -m "Initial commit"
 
-# Deploy
-railway up
+# Deploy to Render (follow dashboard prompts)
 ```
 
-#### Step 3: Configure Environment Variables
+#### Step 3: Configure Render Environment Variables
 ```bash
-1. In Railway dashboard, go to your project
-2. Click "Variables" tab
-3. Add these variables:
-   - MONGO_URL: mongodb+srv://username:password@cluster.mongodb.net/crypttalk
-   - PORT: 5000 (Railway will override this automatically)
-   - FLASK_ENV: production
-   - PYTHONUNBUFFERED: 1
+In Render Dashboard → Your Service → Environment:
 
-4. Click "Deploy" to restart with new variables
+Add these variables:
+┌─────────────────────┬────────────────────────────────────────────┐
+│ Key                 │ Value                                      │
+├─────────────────────┼────────────────────────────────────────────┤
+│ MONGO_URL           │ mongodb+srv://user:pass@cluster.mongodb... │
+│ FLASK_ENV           │ production                                 │
+│ PORT                │ 5000                                       │
+│ PYTHONUNBUFFERED    │ 1                                          │
+└─────────────────────┴────────────────────────────────────────────┘
+
+Save → Render will auto-deploy with new variables
 ```
 
 #### Step 4: Get Your Backend URL
 ```bash
-1. In Railway dashboard, click "Settings"
-2. Click "Generate Domain" under "Networking"
-3. Copy your URL: https://your-app.up.railway.app
-4. Save this for frontend configuration
+1. Wait for deployment to complete (~2-3 minutes)
+2. Copy your URL: https://crypt-talk-backend.onrender.com
+3. Test: https://your-app.onrender.com/api/auth/allusers/test
 ```
 
-#### Step 5: Update Frontend Configuration
+---
+
+### Part 2: Frontend Deployment (Vercel)
+
+#### Step 1: Update Frontend Environment
 ```bash
 # In public/.env file
-REACT_APP_API_URL=https://your-app.up.railway.app
+REACT_APP_API_URL=https://crypt-talk-backend.onrender.com
 REACT_APP_LOCALHOST_KEY=chat-app-current-user
-
-# Then rebuild frontend
-cd public
-npm install
-npm run build
 ```
 
-### Frontend Deployment Options
+#### Step 2: Deploy to Vercel
 
-#### Option 1: Vercel (Recommended for React)
+**Option A: Vercel CLI (Fastest)**
 ```bash
 # Install Vercel CLI
 npm i -g vercel
@@ -654,38 +661,73 @@ npm i -g vercel
 # Navigate to frontend
 cd public
 
+# Login to Vercel
+vercel login
+
 # Deploy
 vercel
 
-# Follow prompts and set environment variables when asked
+# Follow prompts:
+# - Set up and deploy? Yes
+# - Which scope? Your account
+# - Link to existing project? No
+# - Project name? crypt-talk
+# - In which directory is your code? ./
+# - Override settings? No
+
+# Production deployment
+vercel --prod
 ```
 
-#### Option 2: Netlify
+**Option B: Vercel Dashboard**
 ```bash
-# Build frontend
-cd public
-npm run build
-
-# Deploy to Netlify
-# 1. Go to https://app.netlify.com
-# 2. Drag & drop the 'build' folder
-# 3. Set environment variables in Site Settings
+1. Go to https://vercel.com and sign in
+2. "New Project" → Import your GitHub repo
+3. Configure:
+   - Framework Preset: Create React App
+   - Root Directory: public
+   - Build Command: npm run build
+   - Output Directory: build
+4. Environment Variables → Add:
+   - REACT_APP_API_URL: https://your-backend.onrender.com
+   - REACT_APP_LOCALHOST_KEY: chat-app-current-user
+5. Click "Deploy"
 ```
 
-#### Option 3: Railway (Static Site)
+#### Step 3: Access Your Live App
 ```bash
-# Add to public/railway.json
-{
-  "build": {
-    "builder": "NIXPACKS"
-  },
-  "deploy": {
-    "startCommand": "npx serve -s build -l $PORT"
-  }
-}
-
-# Deploy same way as backend
+Your app is live at: https://crypt-talk.vercel.app
+Backend API: https://crypt-talk-backend.onrender.com
 ```
+
+---
+
+### Important: Update Backend CORS
+
+After deploying frontend, update [server/app.py](server/app.py):
+
+```python
+# Replace CORS configuration
+CORS(app, 
+     resources={r"/*": {
+         "origins": [
+             "https://crypt-talk.vercel.app",  # Your Vercel domain
+             "http://localhost:3000"            # Local development
+         ],
+         "supports_credentials": True
+     }})
+
+# Update Socket.IO CORS
+socketio = SocketIO(app, 
+                   cors_allowed_origins=[
+                       "https://crypt-talk.vercel.app",
+                       "http://localhost:3000"
+                   ])
+```
+
+Redeploy backend on Render after this change.
+
+---
 
 ### Docker Deployment (Alternative)
 
@@ -702,49 +744,77 @@ docker build -t crypt-talk-frontend .
 docker run -p 3000:3000 crypt-talk-frontend
 ```
 
+---
+
 ### Production Checklist
 
-Backend (Railway):
-- [x] Set `FLASK_ENV=production`
-- [x] Use MongoDB Atlas with authentication
-- [x] HTTPS/TLS (Railway provides automatically)
+**Backend (Render):**
+- [x] HTTPS/TLS (automatic on Render)
 - [x] WSS for Socket.IO (automatic with HTTPS)
-- [ ] Configure CORS for your frontend domain
-- [ ] Enable rate limiting (add middleware)
-- [ ] Set up monitoring (Railway provides basic metrics)
-- [ ] Regular backups of MongoDB Atlas
+- [x] MongoDB Atlas with authentication
+- [x] Environment variables configured
+- [ ] Update CORS to specific frontend domain
+- [ ] Add rate limiting middleware
+- [ ] Set up health checks
+- [ ] Monitor logs in Render dashboard
 
-Frontend:
-- [ ] Update REACT_APP_API_URL to Railway backend URL
-- [ ] Build production bundle (`npm run build`)
-- [ ] Deploy to Vercel/Netlify
-- [ ] Configure custom domain (optional)
-- [ ] Enable HTTPS (automatic on Vercel/Netlify)
+**Frontend (Vercel):**
+- [x] HTTPS (automatic on Vercel)
+- [x] CDN distribution (automatic)
+- [x] Environment variables set
+- [ ] Custom domain (optional)
+- [ ] Enable analytics (optional)
 
-### Troubleshooting Railway Deployment
+---
 
-#### Issue: Build Fails
+### Troubleshooting
+
+#### Issue: Render Build Fails
 ```bash
-# Check logs in Railway dashboard
+# Check Render logs in dashboard
 # Common fixes:
-1. Ensure requirements.txt is complete
-2. Add runtime.txt with python-3.11
-3. Check Python version compatibility
+1. Ensure requirements.txt includes all dependencies
+2. Verify Python version (3.11 specified in render.yaml)
+3. Check for syntax errors in app.py
 ```
 
-#### Issue: App Crashes on Start
+#### Issue: Frontend Can't Connect to Backend
 ```bash
-# Check environment variables are set
-# Verify MongoDB connection string is correct
-# Check Railway logs for error messages
+# Verify:
+1. REACT_APP_API_URL matches Render backend URL
+2. CORS is configured in app.py
+3. Backend is running (check Render dashboard)
+4. Rebuild frontend: npm run build && vercel --prod
 ```
 
-#### Issue: Socket.IO Not Connecting
+#### Issue: Socket.IO Connection Failed
 ```bash
-# Ensure frontend uses wss:// (not ws://) for production
-# Update CORS settings in app.py to allow your frontend domain
-# Check Railway domain is correctly generated
+# Ensure:
+1. Backend uses wss:// (automatic with HTTPS)
+2. CORS origins include your Vercel domain
+3. No firewall blocking WebSocket connections
 ```
+
+#### Issue: Render Free Tier Sleeps
+```bash
+# Render free tier sleeps after 15 minutes of inactivity
+# First request after sleep takes ~30 seconds
+# Solutions:
+1. Upgrade to paid tier ($7/month)
+2. Use cron job to ping every 10 minutes
+3. Add loading message for cold starts
+```
+
+---
+
+### Cost Breakdown
+
+| Service | Plan | Cost | Limits |
+|---------|------|------|--------|
+| Render | Free | $0 | 750 hrs/month, sleeps after 15min |
+| Vercel | Hobby | $0 | 100GB bandwidth/month |
+| MongoDB Atlas | M0 | $0 | 512MB storage, shared cluster |
+| **Total** | | **$0/month** | Perfect for portfolio projects |
 
 **For complete deployment guide, see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**
 
