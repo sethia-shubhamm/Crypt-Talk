@@ -21,14 +21,29 @@ from communication.voice_messages.voice_handler import create_voice_routes
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, origins="*")
+
+# CORS configuration - allow all origins for local network access
+CORS(app, 
+     resources={r"/*": {
+         "origins": "*",
+         "supports_credentials": True,
+         "allow_headers": ["Content-Type", "Authorization", "X-Requested-With"],
+         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+         "expose_headers": ["Content-Type", "Authorization"]
+     }})
 
 # Configure logging to reduce noise
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
-# Socket.IO configuration
-socketio = SocketIO(app, cors_allowed_origins="*", logger=False, engineio_logger=False)
+# Socket.IO configuration - allow all origins for local network access
+socketio = SocketIO(app, 
+                   cors_allowed_origins="*",
+                   logger=False, 
+                   engineio_logger=False,
+                   async_mode='threading',
+                   ping_timeout=60,
+                   ping_interval=25)
 
 # MongoDB configuration
 try:
@@ -112,21 +127,42 @@ def init_test_user():
 def health_check():
     return jsonify({"status": "ok", "message": "Python Flask backend is running!"})
 
-@app.route('/api/auth/register', methods=['POST'])
+@app.route('/api/auth/register', methods=['POST', 'OPTIONS'])
 def register():
+    # Handle preflight OPTIONS request
+    if request.method == 'OPTIONS':
+        response = jsonify({'status': 'ok'})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
+        return response, 200
+    
     try:
+        # Get JSON data
         data = request.get_json()
+        
+        if not data:
+            return jsonify({"msg": "No data provided", "status": False}), 400
+        
         username = data.get('username')
         email = data.get('email')
         password = data.get('password')
         
+        # Validate required fields
+        if not username or not email or not password:
+            return jsonify({"msg": "All fields are required", "status": False}), 400
+        
+        print(f"📝 Registration attempt: username={username}, email={email}")
+        
         # Check if username already exists
         if find_user_by_username(username):
-            return jsonify({"msg": "Username already used", "status": False})
+            print(f"❌ Username already exists: {username}")
+            return jsonify({"msg": "Username already used", "status": False}), 200
         
         # Check if email already exists
         if find_user_by_email(email):
-            return jsonify({"msg": "Email already used", "status": False})
+            print(f"❌ Email already exists: {email}")
+            return jsonify({"msg": "Email already used", "status": False}), 200
         
         # Hash password
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
@@ -146,36 +182,61 @@ def register():
         # Remove password from response
         del user_data['password']
         
-        return jsonify({"status": True, "user": user_data})
+        print(f"✅ User registered successfully: {username}")
+        return jsonify({"status": True, "user": user_data}), 200
     
     except Exception as e:
+        print(f"❌ Registration error: {str(e)}")
         return jsonify({"msg": f"Server error: {str(e)}", "status": False}), 500
 
-@app.route('/api/auth/login', methods=['POST'])
+@app.route('/api/auth/login', methods=['POST', 'OPTIONS'])
 def login():
+    # Handle preflight OPTIONS request
+    if request.method == 'OPTIONS':
+        response = jsonify({'status': 'ok'})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
+        return response, 200
+    
     try:
+        # Get JSON data
         data = request.get_json()
+        
+        if not data:
+            return jsonify({"msg": "No data provided", "status": False}), 400
+        
         username = data.get('username')
         password = data.get('password')
+        
+        # Validate required fields
+        if not username or not password:
+            return jsonify({"msg": "Username and password are required", "status": False}), 400
+        
+        print(f"🔐 Login attempt: username={username}")
         
         # Find user by username
         user = find_user_by_username(username)
         if not user:
-            return jsonify({"msg": "Incorrect Username or Password", "status": False})
+            print(f"❌ User not found: {username}")
+            return jsonify({"msg": "Incorrect Username or Password", "status": False}), 200
         
         # Check password
         password_match = bcrypt.checkpw(password.encode('utf-8'), user['password'])
         
         if not password_match:
-            return jsonify({"msg": "Incorrect Username or Password", "status": False})
+            print(f"❌ Incorrect password for user: {username}")
+            return jsonify({"msg": "Incorrect Username or Password", "status": False}), 200
         
         # Remove password from response
         user = serialize_user(user)
         del user['password']
         
-        return jsonify({"status": True, "user": user})
+        print(f"✅ Login successful: {username}")
+        return jsonify({"status": True, "user": user}), 200
     
     except Exception as e:
+        print(f"❌ Login error: {str(e)}")
         return jsonify({"msg": f"Server error: {str(e)}", "status": False}), 500
 
 @app.route('/api/auth/allusers/<user_id>', methods=['GET'])

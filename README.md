@@ -566,7 +566,128 @@ python app.py
 
 ## 🚢 Deployment
 
-### Docker Deployment
+### Railway Backend Deployment (Recommended)
+
+#### Prerequisites
+- GitHub account
+- Railway account (sign up at [railway.app](https://railway.app))
+- MongoDB Atlas account (free tier available)
+
+#### Step 1: Setup MongoDB Atlas
+```bash
+1. Go to https://www.mongodb.com/cloud/atlas/register
+2. Create a free cluster
+3. Under "Database Access", create a user with password
+4. Under "Network Access", add IP 0.0.0.0/0 (allow from anywhere)
+5. Get your connection string: mongodb+srv://<username>:<password>@cluster.mongodb.net/crypttalk
+```
+
+#### Step 2: Deploy Backend to Railway
+
+**Option A: Deploy from GitHub (Recommended)**
+```bash
+1. Push your code to GitHub
+2. Go to https://railway.app and sign in
+3. Click "New Project" → "Deploy from GitHub repo"
+4. Select your repository
+5. Railway will auto-detect Python and deploy
+```
+
+**Option B: Deploy with Railway CLI**
+```bash
+# Install Railway CLI
+npm i -g @railway/cli
+
+# Login to Railway
+railway login
+
+# Navigate to server folder
+cd server
+
+# Initialize project
+railway init
+
+# Deploy
+railway up
+```
+
+#### Step 3: Configure Environment Variables
+```bash
+1. In Railway dashboard, go to your project
+2. Click "Variables" tab
+3. Add these variables:
+   - MONGO_URL: mongodb+srv://username:password@cluster.mongodb.net/crypttalk
+   - PORT: 5000 (Railway will override this automatically)
+   - FLASK_ENV: production
+   - PYTHONUNBUFFERED: 1
+
+4. Click "Deploy" to restart with new variables
+```
+
+#### Step 4: Get Your Backend URL
+```bash
+1. In Railway dashboard, click "Settings"
+2. Click "Generate Domain" under "Networking"
+3. Copy your URL: https://your-app.up.railway.app
+4. Save this for frontend configuration
+```
+
+#### Step 5: Update Frontend Configuration
+```bash
+# In public/.env file
+REACT_APP_API_URL=https://your-app.up.railway.app
+REACT_APP_LOCALHOST_KEY=chat-app-current-user
+
+# Then rebuild frontend
+cd public
+npm install
+npm run build
+```
+
+### Frontend Deployment Options
+
+#### Option 1: Vercel (Recommended for React)
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Navigate to frontend
+cd public
+
+# Deploy
+vercel
+
+# Follow prompts and set environment variables when asked
+```
+
+#### Option 2: Netlify
+```bash
+# Build frontend
+cd public
+npm run build
+
+# Deploy to Netlify
+# 1. Go to https://app.netlify.com
+# 2. Drag & drop the 'build' folder
+# 3. Set environment variables in Site Settings
+```
+
+#### Option 3: Railway (Static Site)
+```bash
+# Add to public/railway.json
+{
+  "build": {
+    "builder": "NIXPACKS"
+  },
+  "deploy": {
+    "startCommand": "npx serve -s build -l $PORT"
+  }
+}
+
+# Deploy same way as backend
+```
+
+### Docker Deployment (Alternative)
 
 #### Build and Run
 ```bash
@@ -583,16 +704,47 @@ docker run -p 3000:3000 crypt-talk-frontend
 
 ### Production Checklist
 
-- [ ] Set `FLASK_ENV=production`
-- [ ] Use strong MongoDB credentials
-- [ ] Enable HTTPS/TLS certificates
-- [ ] Configure WSS for Socket.IO
-- [ ] Set up reverse proxy (Nginx/Apache)
-- [ ] Enable rate limiting
-- [ ] Configure CORS properly
-- [ ] Set up monitoring and logging
-- [ ] Regular backups of MongoDB
-- [ ] Update dependencies regularly
+Backend (Railway):
+- [x] Set `FLASK_ENV=production`
+- [x] Use MongoDB Atlas with authentication
+- [x] HTTPS/TLS (Railway provides automatically)
+- [x] WSS for Socket.IO (automatic with HTTPS)
+- [ ] Configure CORS for your frontend domain
+- [ ] Enable rate limiting (add middleware)
+- [ ] Set up monitoring (Railway provides basic metrics)
+- [ ] Regular backups of MongoDB Atlas
+
+Frontend:
+- [ ] Update REACT_APP_API_URL to Railway backend URL
+- [ ] Build production bundle (`npm run build`)
+- [ ] Deploy to Vercel/Netlify
+- [ ] Configure custom domain (optional)
+- [ ] Enable HTTPS (automatic on Vercel/Netlify)
+
+### Troubleshooting Railway Deployment
+
+#### Issue: Build Fails
+```bash
+# Check logs in Railway dashboard
+# Common fixes:
+1. Ensure requirements.txt is complete
+2. Add runtime.txt with python-3.11
+3. Check Python version compatibility
+```
+
+#### Issue: App Crashes on Start
+```bash
+# Check environment variables are set
+# Verify MongoDB connection string is correct
+# Check Railway logs for error messages
+```
+
+#### Issue: Socket.IO Not Connecting
+```bash
+# Ensure frontend uses wss:// (not ws://) for production
+# Update CORS settings in app.py to allow your frontend domain
+# Check Railway domain is correctly generated
+```
 
 **For complete deployment guide, see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**
 

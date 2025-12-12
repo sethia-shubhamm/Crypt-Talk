@@ -112,6 +112,7 @@ class ByteFrequencyMasker:
         Apply byte-frequency masking to plaintext
         
         Args:
+        
             plaintext: Input data to mask
             master_key: Master encryption key (32+ bytes)
             nonce: Unique nonce for this operation (16+ bytes)
